@@ -2,17 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    public function newPostIndex()
-    {
+    public function postIndex($postId) {
+        $post = Post::findOrFail($postId);
+        // $post = Post::find($postId);
+        // if(is_null($post)) {
+        //     return abort(404);
+        // }
+        
+        return view('post', compact('post'));
+    }
+
+    public function newPostIndex() {
         return view('new-post');
     }
 
-    public function storeNewPost(Request $request)
-    {
+    public function storeNewPost(Request $request) {
         // dd($request);
         $data = $request->validate([
             'title' => 'required|min:2|max:48',

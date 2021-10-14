@@ -21,45 +21,34 @@
     <div class="row mt-3">
         <div class="col-12 col-lg-9">
             <div class="row">
-                @for ($i = 0; $i < 200; $i++)
-                <div class="col-12 col-md-6 col-lg-4 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="mb-2">
-                                <h5 class="card-title mb-0">Bejegyzés címe</h5>
-                                <small class="text-secondary">
-                                    <span class="mr-2">
-                                        <i class="fas fa-user"></i>
-                                        <span>Dávid</span>
-                                    </span>
-                                    <span class="mr-2">
-                                        <i class="far fa-calendar-alt"></i>
-                                        <span>2021. 02. 10.</span>
-                                    </span>
-                                </small>
+
+                @foreach ($posts as $post)
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <h5 class="card-title mb-0">{{ $post->title }}</h5>
+                                    <small class="text-secondary">
+                                        <span class="mr-2">
+                                            <i class="fas fa-user"></i>
+                                            <span>{{ $post->author->name }}</span>
+                                        </span>
+                                        <span class="mr-2">
+                                            <i class="far fa-calendar-alt"></i>
+                                            <span>{{ $post->created_at }}</span>
+                                        </span>
+                                    </small>
+                                </div>
+                                <p class="card-text">{{ Str::of($post->text)->limit(32) }}</p>
+                                <a href="{{ route('post', ['postId' => $post->id]) }}" class="btn btn-primary">Megtekint <i class="fas fa-angle-right"></i></a>
                             </div>
-                            <p class="card-text">A bejegyzés szövegének az eleje...</p>
-                            <a href="post.html" class="btn btn-primary">Megtekint <i class="fas fa-angle-right"></i></a>
                         </div>
-                    </div>
-                </div> 
-                @endfor
+                    </div> 
+                @endforeach
                 
             </div>
 
-            <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1">Előző</a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">Következő</a>
-                    </li>
-                </ul>
-            </nav>
+            {{ $posts->links() }}
 
         </div>
         <div class="col-12 col-lg-3">
@@ -84,14 +73,11 @@
                         <div class="card-body">
                             <h5 class="card-title mb-2">Kategóriák</h5>
                             <p class="small">Bejegyzések megtekintése egy adott kategóriához.</p>
-                            <a href="#" class="badge badge-primary">Primary</a>
-                            <a href="#" class="badge badge-secondary">Secondary</a>
-                            <a href="#" class="badge badge-success">Success</a>
-                            <a href="#" class="badge badge-danger">Danger</a>
-                            <a href="#" class="badge badge-warning">Warning</a>
-                            <a href="#" class="badge badge-info">Info</a>
-                            <a href="#" class="badge badge-light">Light</a>
-                            <a href="#" class="badge badge-dark">Dark</a>
+                            
+                            @foreach ($categories as $category)
+                                <a href="#" class="badge badge-{{ $category->color }}">{{ $category->name }}</a>
+                            @endforeach
+
                         </div>
                     </div>
                 </div>
@@ -103,11 +89,10 @@
                             <div class="small">
                                 <p class="mb-1">Adatbázis statisztika:</p>
                                 <ul class="fa-ul">
-                                    <li><span class="fa-li"><i class="fas fa-user"></i></span>Felhasználók: 1</li>
-                                    <li><span class="fa-li"><i class="fas fa-file-alt"></i></span>Bejegyzések: 1
+                                    <li><span class="fa-li"><i class="fas fa-user"></i></span>Felhasználók: {{ $users_count }}</li>
+                                    <li><span class="fa-li"><i class="fas fa-file-alt"></i></span>Bejegyzések: {{ $posts_count }}
                                     </li>
-                                    <li><span class="fa-li"><i class="fas fa-comments"></i></span>Hozzászólások: 3
-                                    </li>
+                                    {{-- <li><span class="fa-li"><i class="fas fa-comments"></i></span>Hozzászólások: 3</li> --}}
                                 </ul>
                             </div>
                         </div>

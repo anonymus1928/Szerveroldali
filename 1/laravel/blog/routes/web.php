@@ -27,5 +27,6 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/categories',        [CategoryController::class, 'categoryIndex'])   ->name('category');
 Route::get('/categories/create', [CategoryController::class, 'newCategoryIndex'])->name('new-category');
 
+Route::get( '/post/{postId}',[PostController::class, 'postIndex'   ])->name('post')->where(['postId' => '[0-9]+']);
 Route::get( '/posts/create', [PostController::class, 'newPostIndex'])->name('new-post');
 Route::post('/posts/create', [PostController::class, 'storeNewPost'])->name('store-new-post');
