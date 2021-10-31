@@ -41,6 +41,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get( '/categories/create',   [CategoryController::class, 'newCategoryIndex'])->name('new-category');
     Route::post('/categories/create',   [CategoryController::class, 'storeNewCategory'])->name('store-new-category');
+
+
+    Route::delete('/files/{postId}', [PostController::class, 'deleteFile'])->name('delete-file')->where(['postId' => '[0-9]+']);
 });
 
 

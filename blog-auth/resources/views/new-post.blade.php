@@ -129,5 +129,17 @@
             <button type="submit" class="btn btn-primary">Létrehoz</button>
         </div>
     </form>
+    @isset($url)
+        <form action="{{ route('delete-file', ['postId' => $post->id]) }}" method="post">
+            @csrf
+            @method('delete')
+
+            <div class="form-group text-center mt-3">
+                <a href="{{ $url }}" target="_blank" class="btn btn-primary">{{ $post->attachment_original_name }} megtekintése</a>
+
+                <button class="btn btn-danger" type="button" onclick="event.preventDefault(); this.closest('form').submit();"><i class="fas fa-trash"></i> Törlés</button>
+            </div>
+        </form>
+    @endisset
 </div>
 @endsection

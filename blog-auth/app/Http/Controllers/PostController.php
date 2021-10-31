@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -16,6 +17,14 @@ class PostController extends Controller
         // if(is_null($post)) {
         //     return abort(404);
         // }
+
+        if(isset($post->attachment_hash_name)) {
+            return view('post', [
+                'post' => $post,
+                'url' => Storage::url($post->attachment_hash_name),
+            ]);
+        }
+
         return view('post', compact('post'));
     }
 
@@ -44,7 +53,18 @@ class PostController extends Controller
             'attachment.max' => 'A csatolmány mérete lefgeljebb :max kilobájt lehet.',
         ]);
 
-        User::findOrFail(Auth::id())->posts()->create($data);
+        $post = User::findOrFail(Auth::id())->posts()->create($data);
+
+        if($request->hasFile('attachment')) {
+            $filename = $request->file('attachment')->getClientOriginalName();
+            $path = $request->file('attachment')->store('public');
+
+            // dd($path, $filename);
+            $post->attachment_hash_name = $path;
+            $post->attachment_original_name = $filename;
+            $post->save();
+        }
+
 
         // $post = new Post($data);
         // $author = User::findOrFail(Auth::id());
@@ -59,7 +79,12 @@ class PostController extends Controller
         $post = Post::findOrFail($postId);
         if($post->author->id === Auth::id() || Auth::user()->is_admin) {
             $categories = Category::all();
-            return view('new-post', ['post' => $post, 'categories' => $categories]);
+
+            $url = null;
+            if(isset($post->attachment_hash_name)) {
+                $url = Storage::url($post->attachment_hash_name);
+            }
+            return view('new-post', ['post' => $post, 'categories' => $categories, 'url' => $url]);
         } else {
             abort(401);
         }
@@ -96,6 +121,19 @@ class PostController extends Controller
         $post->disabled_comments = isset($data['disable-comments']) ? $data['disable-comments'] : false;
         
         $post->categories()->sync(isset($data['categories']) ? $data['categories'] : []);
+
+        if($request->hasFile('attachment')) {
+            if(isset($post->attachment_hash_name)) {
+                Storage::delete($post->attachment_hash_name);
+            }
+
+            $filename = $request->file('attachment')->getClientOriginalName();
+            $path = $request->file('attachment')->store('public');
+
+            // dd($path, $filename);
+            $post->attachment_hash_name = $path;
+            $post->attachment_original_name = $filename;
+        }
         
         $post->save();
 
@@ -111,5 +149,21 @@ class PostController extends Controller
 
         $post->delete();
         return redirect()->route('home');
+    }
+
+    public function deleteFile($postId) {
+        $post = Post::findOrFail($postId);
+
+        if($post->author->id !== Auth::id() && !Auth::user()->is_admin) {
+            abort(401);
+        }
+
+        Storage::delete($post->attachment_hash_name);
+
+        $post->attachment_hash_name = null;
+        $post->attachment_original_name = null;
+        $post->save();
+
+        return redirect()->route('edit-post', ['postId' => $post->id]);
     }
 }

@@ -28,7 +28,7 @@
             </div>
 
             <div class="mb-3">
-                <a href="index.html"><i class="fas fa-long-arrow-alt-left"></i> Minden bejegyzés</a>
+                <a href="{{ route('home') }}"><i class="fas fa-long-arrow-alt-left"></i> Minden bejegyzés</a>
             </div>
         </div>
         @if(Auth::id() === $post->author->id || Auth::user()->is_admin)
@@ -51,10 +51,12 @@
     <div class="mt-3">
         <p>{{ $post->text }}</p>
 
-        <div class="attachment mb-3">
-            <h5>Csatolmány</h5>
-            <a href="#">csatolmany.pdf</a>
-        </div>
+        @isset($url)
+            <div class="attachment mb-3">
+                <h5>Csatolmány</h5>
+                <a href="{{ $url }}" target="_blank">{{ $post->attachment_original_name }}</a>
+            </div>
+        @endisset
 
         <h3>Hozzászólások</h3>
 
