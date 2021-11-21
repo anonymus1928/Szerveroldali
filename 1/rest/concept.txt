@@ -1,0 +1,18 @@
+Feladat:
+
+Mint a beadandóban, csak egészítsük ki műfajokkal.
+
+Modellek:
+User
+Movie
+Rating
+Genre
+  - name
+  - description
+
+Relációk:
+User 1 - N Rating
+Movie 1 - N Rating
+Genre N - N Movie
+
+
