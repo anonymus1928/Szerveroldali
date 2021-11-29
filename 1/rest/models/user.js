@@ -1,7 +1,12 @@
 'use strict';
-const { Model } = require('sequelize');
 const bcrypt = require('bcrypt');
+const {
+  Model
+} = require('sequelize');
 
+// const hashPassword = user => {
+//     user.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(12));
+// };
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -29,30 +34,20 @@ module.exports = (sequelize, DataTypes) => {
   };
   User.init({
     name: DataTypes.STRING,
-    email: {
-        type: DataTypes.STRING,
-        validate: {
-            isEmail: true,
-        }
-    },
-    password: {
-        type: DataTypes.STRING,
-        validate: {
-            len: [4,128],
-        }
-    },
+    email: DataTypes.STRING,
+    password: DataTypes.STRING,
     isAdmin: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'User',
 
-    // Nem jó, mert a comparePassword nem fog működni
+    // Nem jó, mert a comparePassword-ben se érné el a jelszót
     // defaultScope: {
-    //     attributes: { exclude: ['password'] },
-    // },
+    //     attributes: { exclude: ['password'] }
+    // }
 
     hooks: {
-        beforeCreate: (user) => {
+        beforeCreate: user => {
             user.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(12));
         },
     }

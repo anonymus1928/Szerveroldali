@@ -10,10 +10,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
+    "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
+    "express-jwt": "^6.1.0",
+    "jsonwebtoken": "^8.5.1",
     "sequelize": "^6.9.0",
     "sqlite3": "^5.0.2"
   },
   "devDependencies": {
+    "faker": "^5.5.3",
     "sequelize-cli": "^6.3.0"
   }
 }

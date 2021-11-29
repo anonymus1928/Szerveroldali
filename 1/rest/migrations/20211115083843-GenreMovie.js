@@ -25,6 +25,12 @@ module.exports = {
           type: Sequelize.DATE
         }
       });
+
+      // Megkötés -> ne lehessen kétszer ugyanazt hozzáadni a táblához
+      await queryInterface.addConstraint('GenreMovie', {
+          fields: ['GenreId', 'MovieId'],
+          type: 'unique',
+      });
   },
 
   down: async (queryInterface, Sequelize) => {

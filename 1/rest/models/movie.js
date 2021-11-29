@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
           through: 'GenreMovie',
           as: 'Genres'
       });
+      this.hasMany(models.Rating);
     }
   };
   Movie.init({
