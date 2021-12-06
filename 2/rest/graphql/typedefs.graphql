@@ -1,0 +1,71 @@
+type Query {
+    hello: String
+    helloName(name: String!): String
+
+    genres: [Genre]
+    genre(id: Int!): Genre
+
+    movies: [Movie]
+    movie(id: Int!): Movie
+
+    users: [User]
+    user(id: Int!): User
+
+    # Legjobb értékelésű filmek
+    top(limit: Int!): [Movie]
+
+    # Auth
+    helloAuth: String
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: EmailAddress!
+    isAdmin: Boolean!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+}
+
+type Genre {
+    id: ID!
+    name: String!
+    description: String
+    createdAt: DateTime!
+    updatedAt: DateTime!
+
+    # Asszociációk
+    movies: [Movie]
+}
+
+type Movie {
+    id: ID!
+    title: String
+    director: String
+    description: String
+    year: Int
+    length: Int
+    imageUrl: String
+    ratingsEnabled: Boolean
+    createdAt: DateTime!
+    updatedAt: DateTime!
+
+    # Egyéb mező
+    averageRating: Float
+
+    # Asszociációk
+    genres: [Genre]
+    ratings: [Rating]
+}
+
+type Rating {
+    id: ID!
+    rating: Int!
+    comment: String
+    createdAt: DateTime!
+    updatedAt: DateTime!
+
+    # Asszociációk
+    movie: Movie!
+    user: User!
+}

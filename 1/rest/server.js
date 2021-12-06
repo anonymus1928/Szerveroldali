@@ -1,6 +1,9 @@
 const express = require('express');
 require('express-async-errors');
 
+// graphql playground
+const expressPlayground = require('graphql-playground-middleware-express').default
+
 const app = express();
 
 app.use(express.json());
@@ -10,7 +13,9 @@ app.use('/genres', require('./routers/genre'));
 app.use('/movies', require('./routers/movie'));
 app.use('/auth', require('./routers/auth'));
 
-
+// GraphQL
+app.use('/graphql', require('./graphql'));
+app.use('/playground', expressPlayground({ endpoint: '/graphql' }));
 
 // req -> middleware -> resp
 //                   -> next
