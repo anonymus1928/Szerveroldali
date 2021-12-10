@@ -60,6 +60,50 @@ module.exports = {
             ).slice(0, limit);
         }
     },
+    Mutation: {
+        rate: auth(async (_, { movieId, rating, comment }, context) => {
+            const movie = await Movie.findByPk(movieId);
+            if(movie === null) throw new Error('A megadott film nem létezik!');
+            if(!movie.ratingsEnabled) throw new Error('A filmet nem lehet értékelni!');
+
+            // A felhasználó értékelte-e már a filmet?
+            let ratingDB = await Rating.findOne({ where: { MovieId: movie.id, UserId: context.user.id } });
+            if(ratingDB === null) {
+                // Még nem értékelte --> új értékelés
+                ratingDB = await Rating.create({
+                    rating,
+                    comment,
+                    MovieId: movieId,
+                    UserId: context.user.id,
+                });
+                return {
+                    newRating: true,
+                    rating: ratingDB,
+                };
+            } else {
+                // Már értékelte --> értékelés módosítása
+                ratingDB = await ratingDB.update({
+                    rating,
+                    comment,
+                });
+                return {
+                    newRating: false,
+                    rating: ratingDB,
+                };
+            }
+        }),
+        deleteRate: auth(async (_, { movieId }, context) => {
+            const movie = await Movie.findByPk(movieId);
+            if(movie === null) throw new Error('A megadott film nem létezik!');
+            if(!movie.ratingsEnabled) throw new Error('A filmet nem lehet értékelni!');
+
+            // A felhasználó értékelte-e már a filmet?
+            let ratingDB = await Rating.findOne({ where: { MovieId: movie.id, UserId: context.user.id } });
+            if(!ratingDB) return false;
+            await ratingDB.destroy();
+            return true;
+        }),
+    },
     Genre: {
         movies: (genre) => genre.getMovies(),
     },

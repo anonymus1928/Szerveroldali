@@ -18,6 +18,18 @@ type Query {
     helloAuth: String
 }
 
+type Mutation {
+    rate(movieId: Int!, rating: Int!, comment: String): RatingResponse!
+    deleteRate(movieId: Int!): Boolean!
+}
+
+type RatingResponse {
+    # Új értékelést adtunk-e hozzá
+    newRating: Boolean!
+    # Aktualizált rating
+    rating: Rating!
+}
+
 type User {
     id: ID!
     name: String!

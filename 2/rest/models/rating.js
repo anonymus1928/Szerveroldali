@@ -16,7 +16,13 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Rating.init({
-    rating: DataTypes.INTEGER,
+    rating: {
+        type: DataTypes.INTEGER,
+        validate: {
+            min: 1,
+            max: 5,
+        }
+    },
     comment: DataTypes.STRING,
     UserId: DataTypes.INTEGER,
     MovieId: DataTypes.INTEGER
