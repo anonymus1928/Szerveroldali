@@ -40,5 +40,10 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'is_admin' => 'boolean',
     ];
+
+    public function tickets() {
+        return $this->belongsToMany(Ticket::class);
+    }
 }

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
@@ -19,6 +18,7 @@ class UserSeeder extends Seeder
             'email' => 'admin@q.hu',
             'is_admin' => true,
         ]);
+
         User::factory(10)->create();
     }
 }
