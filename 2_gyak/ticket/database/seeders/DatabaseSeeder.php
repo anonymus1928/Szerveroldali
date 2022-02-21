@@ -14,17 +14,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call([
-        //     UserSeeder::class,
-        //     TicketSeeder::class,
-        //     CommentSeeder::class,
-        // ]);
-
-        User::factory()
-                ->hasTickets(5)
-                ->create([
-            'is_admin' => true,
+        $this->call([
+            UserSeeder::class,
+            TicketSeeder::class,
+            CommentSeeder::class,
         ]);
-        User::factory(10)->create();
+
+        // User::factory()
+        //         ->hasTickets(5)
+        //         ->create([
+        //     'is_admin' => true,
+        // ]);
+        // User::factory(10)->create();
     }
 }

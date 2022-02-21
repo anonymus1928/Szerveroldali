@@ -19,6 +19,14 @@ class Ticket extends Model
     }
 
     public function users() {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)->withPivot('is_submitter', 'is_responsible');
+    }
+
+    public function submitter() {
+        return $this->belongsToMany(User::class)->wherePivot('is_submitter', 1);
+    }
+
+    public function notSubmitter() {
+        return $this->belongsToMany(User::class)->wherePivot('is_submitter', 0);
     }
 }
