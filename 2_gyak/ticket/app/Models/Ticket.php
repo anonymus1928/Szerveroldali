@@ -23,10 +23,10 @@ class Ticket extends Model
     }
 
     public function submitter() {
-        return $this->belongsToMany(User::class)->wherePivot('is_submitter', 1);
+        return $this->belongsToMany(User::class)->withPivot('is_submitter', 'is_responsible')->wherePivot('is_submitter', 1);
     }
 
     public function notSubmitter() {
-        return $this->belongsToMany(User::class)->wherePivot('is_submitter', 0);
+        return $this->belongsToMany(User::class)->withPivot('is_submitter', 'is_responsible')->wherePivot('is_submitter', 0);
     }
 }

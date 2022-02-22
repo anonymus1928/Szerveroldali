@@ -44,6 +44,10 @@ class User extends Authenticatable
     ];
 
     public function tickets() {
-        return $this->belongsToMany(Ticket::class);
+        return $this->belongsToMany(Ticket::class)->withPivot('is_submitter', 'is_responsible');
+    }
+
+    public function comments() {
+        return $this->hasMany(Comment::class);
     }
 }
