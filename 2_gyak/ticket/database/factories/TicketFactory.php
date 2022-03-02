@@ -15,7 +15,8 @@ class TicketFactory extends Factory
     {
         return [
             'title' => $this->faker->sentence(),
-            'priority' => $this->faker->numberBetween(0, 5),
+            'priority' => $this->faker->numberBetween(0, 3),
+            'done' => $this->faker->boolean(),
         ];
     }
 }
