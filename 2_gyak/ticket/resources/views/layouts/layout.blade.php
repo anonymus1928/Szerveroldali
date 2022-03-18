@@ -27,7 +27,7 @@
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid mx-5">
-                <a class="navbar-brand" href="#">Ticket</a>
+                <a class="navbar-brand" href="{{ route('feladatok.index') }}">Ticket</a>
                 <button
                     class="navbar-toggler"
                     type="button"
@@ -42,29 +42,39 @@
                 <div class="collapse navbar-collapse" id="main-navbar">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link" href="feladatok.html">Nyitott feladatok</a>
+                            <a class="nav-link" href="{{ route('feladatok.index') }}">Nyitott feladatok</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="lezart_feladatok.html">Lezárt feladatok</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="uj_feladat.html">Új feladat</a>
+                            <a class="nav-link" href="{{ route('feladatok.create') }}">Új feladat</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="felhasznalok.html">Felhasználók (ADMIN)</a>
+                            <a class="nav-link" href="{{ route('users') }}">Felhasználók (ADMIN)</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="feladatok.html">Összes feladat (ADMIN)</a>
+                            <a class="nav-link" href="{{ route('feladatok.index') }}">Összes feladat (ADMIN)</a>
                         </li>
                     </ul>
                     <div class="d-flex">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Bejelentkezés</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Regisztráció</a>
-                            </li>
+                            @auth
+                                <form action="{{ route('logout') }}" method="post">
+                                    @csrf
+                                    <li class="nav-item">
+                                        <button class="nav-link" type="submit" onclick="event.preventDefault(); this.closest('form').submit();">Kijelentkezés</button>
+                                    </li>
+                                </form>
+                            @endauth
+                            @guest
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('login') }}">Bejelentkezés</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('register') }}">Regisztráció</a>
+                                </li>
+                            @endguest
                         </ul>
                     </div>
                 </div>

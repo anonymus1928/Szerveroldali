@@ -57,7 +57,7 @@
                         </td>
                         <td>
                             <div>
-                                <a href="feladat.html">{{ $ticket->title }}</a>
+                                <a href="{{ route('feladatok.show', ['feladatok' => $ticket->id]) }}">{{ $ticket->title }}</a>
                             </div>
                         </td>
                         <td>

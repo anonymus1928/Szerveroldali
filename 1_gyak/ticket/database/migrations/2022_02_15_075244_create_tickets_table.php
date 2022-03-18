@@ -18,7 +18,7 @@ class CreateTicketsTable extends Migration
             $table->timestamps();
             $table->string('title');
             $table->integer('priority');
-            $table->boolean('done');
+            $table->boolean('done')->default(false);
         });
     }
 

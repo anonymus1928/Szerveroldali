@@ -23,10 +23,14 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-Route::get('/feladatok', [TicketController::class, 'show']);
+// Route::get('/feladatok', [TicketController::class, 'show']);
+// Route::get('/feladat/{id}', [TicketController::class, 'showTicket'])->where('id', '[0-9]+');
 
-Route::get('/feladat/{id}', [TicketController::class, 'showTicket'])->where('id', '[0-9]+');
+Route::middleware(['auth'])->group(function () {
+    Route::resource('feladatok', TicketController::class);
+});
 
-Route::get('/felhasznalok', [UserController::class, 'show']);
+
+Route::get('/felhasznalok', [UserController::class, 'show'])->name('users');
 
 require __DIR__.'/auth.php';
