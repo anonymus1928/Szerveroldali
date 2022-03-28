@@ -1,12 +1,23 @@
 @extends('layouts.layout')
 
-@section('title', 'Új feladat')
+@isset($ticket)
+    @section('title', $ticket->title)
+@else
+    @section('title', 'Új feladat')
+@endisset
 
 @section('content')
-    <h1 class="ps-3">Új feladat</h1>
+    @isset($ticket)
+        <h1 class="ps-3">{{ $ticket->title }}</h1>
+    @else
+        <h1 class="ps-3">Új feladat</h1>
+    @endisset
     <hr />
-    <form method="post" action="{{ route('feladatok.store') }}">
+    <form method="post" @isset($ticket) action="{{ route('feladatok.update', ['feladatok' => $ticket->id]) }}" @else action="{{ route('feladatok.store') }}" @endisset enctype="multipart/form-data">
         @csrf
+        @isset($ticket)
+            @method('put')
+        @endisset
         <div class="row mb-3">
             <div class="col">
                 <input
@@ -15,7 +26,11 @@
                     placeholder="Tárgy"
                     name="title"
                     id="title"
-                    value="{{ old('title') }}"
+                    @isset($ticket)
+                        value="{{ old('title', $ticket->title) }}"
+                    @else
+                        value="{{ old('title') }}"
+                    @endisset
                 />
                 @error('title')
                     <div class="invalid-feedback">
@@ -26,10 +41,10 @@
             <div class="col">
                 <select class="form-select @error('priority') is-invalid @enderror" name="priority" id="priority" >
                     <option value="x" disabled>Priorítás</option>
-                    <option value="0">Alacsony</option>
-                    <option value="1">Normál</option>
-                    <option value="2">Magas</option>
-                    <option value="3">Azonnal</option>
+                    <option value="0" @if(isset($ticket) && $ticket->priority === 0) selected @endif>Alacsony</option>
+                    <option value="1" @if(isset($ticket) && $ticket->priority === 1) selected @endif>Normál</option>
+                    <option value="2" @if(isset($ticket) && $ticket->priority === 2) selected @endif>Magas</option>
+                    <option value="3" @if(isset($ticket) && $ticket->priority === 3) selected @endif>Azonnal</option>
                 </select>
                 @error('priority')
                     <div class="invalid-feedback">
@@ -39,7 +54,7 @@
             </div>
         </div>
         <div class="mb-3">
-            <textarea class="form-control @error('text') is-invalid @enderror" name="text" id="text" cols="30" rows="10" placeholder="Hiba leírása...">{{ old('text') }}</textarea>
+            <textarea class="form-control @error('text') is-invalid @enderror" name="text" id="text" cols="30" rows="10" placeholder="Hiba leírása..." @isset($ticket) disabled @endisset>{{ old('text') }}</textarea>
             @error('text')
                 <div class="invalid-feedback">
                     {{ $message }}
@@ -47,7 +62,7 @@
             @enderror
         </div>
         <div class="mb-3">
-            <input type="file" class="form-control" id="file">
+            <input type="file" class="form-control" id="file" name="file" @isset($ticket) disabled @endisset>
         </div>
         <div class="row">
             <button type="submit" class="btn btn-primary">Mentés</button>

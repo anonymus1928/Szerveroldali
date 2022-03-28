@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -42,6 +43,7 @@ class TicketController extends Controller
             'title' => 'required|string',
             'priority' => 'required|integer|min:0|max:3',
             'text' => 'required|string|max:1000',
+            'file' => 'file',
         ]);
         $ticket = new Ticket($validated);
         $ticket->save();
@@ -52,6 +54,10 @@ class TicketController extends Controller
         $comment = new Comment($validated);
         $comment->ticket()->associate($ticket);
         $comment->user()->associate(Auth::user());
+        if($request->hasFile('file')) {
+            $comment->filename = $request->file('file')->getClientOriginalName();
+            $comment->filename_hash = $request->file('file')->store('public');
+        }
         $comment->save();
 
         return redirect()->route('feladatok.index');
@@ -65,7 +71,10 @@ class TicketController extends Controller
      */
     public function show($id)
     {
-        $ticket = Ticket::find($id);
+        $ticket = Ticket::findOrFail($id);
+        if (!$ticket->users->contains(Auth::id()) && !Auth::user()->is_admin) {
+            abort(401);
+        }
         return view('site.ticket', ['ticket' => $ticket]);
     }
 
@@ -77,7 +86,11 @@ class TicketController extends Controller
      */
     public function edit($id)
     {
-        //
+        $ticket = Ticket::findOrFail($id);
+        if (!$ticket->users->contains(Auth::id()) && !Auth::user()->is_admin) {
+            abort(401);
+        }
+        return view('site.modify-ticket', ['ticket' => $ticket]);
     }
 
     /**
@@ -89,7 +102,17 @@ class TicketController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'priority' => 'required|integer|min:0|max:3',
+        ]);
+        $ticket = Ticket::findOrFail($id);
+        if (!$ticket->users->contains(Auth::id()) && !Auth::user()->is_admin) {
+            abort(401);
+        }
+        $ticket->update($validated);
+
+        return redirect()->route('feladatok.show', ['feladatok' => $ticket->id]);
     }
 
     /**
@@ -100,6 +123,38 @@ class TicketController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $ticket = Ticket::findOrFail($id);
+        if (!$ticket->users->contains(Auth::id()) && !Auth::user()->is_admin) {
+            abort(401);
+        }
+        $ticket->delete();
+        return redirect()->route('feladatok.index');
+    }
+
+    public function showUsers($id) {
+        $ticket = Ticket::findOrFail($id);
+        if (!$ticket->users->contains(Auth::id()) && !Auth::user()->is_admin) {
+            abort(401);
+        }
+        $otherUsers = User::all()->diff($ticket->users);
+        return view('site.ticket-user', ['ticket' => $ticket, 'otherUsers' => $otherUsers]);
+    }
+
+    public function addUser(Request $request, $id, $userId) {
+        $ticket = Ticket::findOrFail($id);
+        if (!$ticket->users->contains(Auth::id()) && !Auth::user()->is_admin) {
+            abort(401);
+        }
+        $ticket->users()->attach($userId, ['is_responsible' => $request->is_responsible === 'true']);
+        return redirect()->route('feladatok.felhasznalok', ['feladatok' => $ticket->id]);
+    }
+
+    public function removeUser($id, $userId) {
+        $ticket = Ticket::findOrFail($id);
+        if (!$ticket->users->contains(Auth::id()) && !Auth::user()->is_admin) {
+            abort(401);
+        }
+        $ticket->users()->detach($userId);
+        return redirect()->route('feladatok.felhasznalok', ['feladatok' => $ticket->id]);
     }
 }

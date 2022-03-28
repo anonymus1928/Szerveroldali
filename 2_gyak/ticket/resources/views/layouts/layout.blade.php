@@ -50,12 +50,14 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('feladatok.create') }}">Új feladat</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('users') }}">Felhasználók (ADMIN)</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('feladatok.index') }}">Összes feladat (ADMIN)</a>
-                        </li>
+                        @if (Auth::user()->is_admin)
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('users') }}">Felhasználók (ADMIN)</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('feladatok.index') }}">Összes feladat (ADMIN)</a>
+                            </li>
+                        @endif
                     </ul>
                     <div class="d-flex">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
@@ -63,7 +65,7 @@
                                 <form action="{{ route('logout') }}" method="post">
                                     @csrf
                                     <li class="nav-item">
-                                        <button class="nav-link" type="submit" onclick="event.preventDefault(); this.closest('form').submit();">Kijelentkezés</button>
+                                        <a class="nav-link" type="submit" onclick="event.preventDefault(); this.closest('form').submit();">Kijelentkezés</a>
                                     </li>
                                 </form>
                             @endauth

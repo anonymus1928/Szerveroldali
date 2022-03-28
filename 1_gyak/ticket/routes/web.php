@@ -28,6 +28,9 @@ Route::get('/dashboard', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('feladatok', TicketController::class);
+    Route::get(   '/feladatok/{feladatok}/felhasznalok',               [TicketController::class, 'showUsers']) ->name('feladatok.felhasznalok');
+    Route::post(  '/feladatok/{feladatok}/felhasznalok/{felhasznalo}', [TicketController::class, 'addUser'])   ->name('feladatok.felhasznalok.add');
+    Route::delete('/feladatok/{feladatok}/felhasznalok/{felhasznalo}', [TicketController::class, 'removeUser'])->name('feladatok.felhasznalok.remove');
 });
 
 

@@ -30,18 +30,22 @@
                 @break
             @endswitch
         </h1>
-        <button class="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Szerkesztés">
+        <a href="{{ route('feladatok.edit', ['feladatok' => $ticket->id]) }}" class="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Szerkesztés">
             <i class="fa-solid fa-pen-to-square fa-fw fa-xl"></i>
-        </button>
-        <button class="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Felhasználók">
+        </a>
+        <a href="{{ route('feladatok.felhasznalok', ['feladatok' => $ticket->id]) }}" class="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Felhasználók">
             <i class="fa-solid fa-users fa-fw fa-xl"></i>
-        </button>
+        </a>
         <button class="btn btn-success mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Lezárás">
             <i class="fa-solid fa-check fa-fw fa-xl"></i>
         </button>
-        <button class="btn btn-danger mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Törlés">
-            <i class="fa-solid fa-trash fa-fw fa-xl"></i>
-        </button>
+        <form action="{{ route('feladatok.destroy', ['feladatok' => $ticket->id]) }}" method="post">
+            @csrf
+            @method('delete')
+            <button href="{{ route('feladatok.destroy', ['feladatok' => $ticket->id]) }}" class="btn btn-danger mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Törlés" type="submit">
+                <i class="fa-solid fa-trash fa-fw fa-xl"></i>
+            </button>
+        </form>
     </div>
     <hr />
     @foreach ($ticket->comments->sortBy('created_at') as $comment)
@@ -49,7 +53,7 @@
             <div class="card-header d-flex">
                 <div class="me-auto"><span class="badge bg-secondary">#{{ $loop->index }}</span> | <strong>{{ $comment->user->name }}</strong> | {{ $comment->created_at }}</div>
                 @isset($comment->filename)
-                    <div><a href="#"><i class="fa-solid fa-download"></i></a></div>
+                    <div><a href="{{ Storage::url($comment->filename_hash) }}" download="{{ $comment->filename }}"><i class="fa-solid fa-download"></i></a></div>
                 @endisset
             </div>
             <div class="card-body">

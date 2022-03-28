@@ -19,6 +19,7 @@ class CreateTicketsTable extends Migration
             $table->string('title');
             $table->integer('priority');
             $table->boolean('done')->default(false);
+            $table->softDeletes();
         });
     }
 
