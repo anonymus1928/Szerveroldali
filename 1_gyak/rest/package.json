@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "db": "npx sequelize db:migrate:undo:all && npx sequelize db:migrate"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^6.1.2",
+    "sequelize": "^6.18.0",
+    "sqlite3": "^5.0.2"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.4.1"
+  }
+}
