@@ -67,11 +67,14 @@ const { Op } = require('sequelize');
     // console.log(await Ticket.findByPk(99999999));
     // console.log(await Ticket.findOne({ where: { id: 3 } }));
 
-    console.log(await Ticket.findAll({
-        where: {
-            priority: {
-                [Op.gte]: 2
-            }
-        }
-    }));
+    // console.log(await Ticket.findAll({
+    //     where: {
+    //         priority: {
+    //             [Op.gte]: 2
+    //         }
+    //     }
+    // }));
+
+
+    console.log((await User.findByPk(2)).toJSON());
 })();

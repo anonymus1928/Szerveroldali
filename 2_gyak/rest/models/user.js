@@ -1,7 +1,6 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+const bcrypt = require('bcrypt');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -16,7 +15,22 @@ module.exports = (sequelize, DataTypes) => {
         as: 'Tickets',
       });
     }
+
+    comparePassword (password) {
+      return bcrypt.compareSync(password, this.password);
+    }
+
+    toJSON() {
+      let userData = this.get();
+      if(userData.hasOwnProperty('password')) {
+        delete userData.password;
+      }
+      return userData;
+    }
+    
   }
+
+
   User.init({
     name: DataTypes.STRING,
     email: DataTypes.STRING,
@@ -25,6 +39,11 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'User',
+    hooks: {
+      beforeCreate: (user) => {
+        user.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(12))
+      },
+    }
   });
   return User;
 };
