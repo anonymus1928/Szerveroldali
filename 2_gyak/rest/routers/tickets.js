@@ -75,8 +75,8 @@ router.post('/', auth, async (req, res) => {
         title,
         priority,
     });
-    ticket.addUser(req.user.id);
-    ticket.createComment({
+    await ticket.addUser(req.user.id);
+    await ticket.createComment({
         text,
         UserId: req.user.id,
     });

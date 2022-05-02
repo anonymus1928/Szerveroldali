@@ -69,8 +69,8 @@ router.post('/', auth, async (req, res) => {
         return res.status(400).send({ message: 'A priority 0 és 4 közötti egész szám lehet.' });
     }
     const ticket = await Ticket.create({ title, priority, done: false });
-    ticket.addUser(req.user.id);
-    ticket.createComment({ text, UserId: req.user.id });
+    await ticket.addUser(req.user.id);
+    await ticket.createComment({ text, UserId: req.user.id });
     const resTicket = await Ticket.findByPk(ticket.id, {
         include: [
             {
