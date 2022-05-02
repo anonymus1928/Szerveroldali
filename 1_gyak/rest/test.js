@@ -1,5 +1,5 @@
 const models = require('./models');
-const { User, Ticket, Comment } = models;
+const { User, Ticket, Comment, sequelize } = models;
 const { faker } = require('@faker-js/faker');
 const { Op } = require('sequelize');
 
@@ -75,6 +75,28 @@ const { Op } = require('sequelize');
     //     }
     // }));
 
+    // console.log((await User.findByPk(2)).toJSON());
 
-    console.log((await User.findByPk(2)).toJSON());
+    // Összes priorításhoz mennyi ticket tartozik és mennyi comment.
+
+    const prio = await Ticket.findAll({
+        attributes: [
+            'priority',
+            [sequelize.fn('COUNT', sequelize.col('ticket.id')), 'numTicket'],
+            [sequelize.fn('COUNT', sequelize.col('Comments.id')), 'numComment'],
+        ],
+        include: [
+            {
+                model: Comment,
+                as: 'Comments',
+                attributes: []
+            },
+            {
+                model: User,
+                as: 'Users',
+            }
+        ],
+        group: ['priority'],
+    });
+    console.log(prio.map(p => p.toJSON()));
 })();
