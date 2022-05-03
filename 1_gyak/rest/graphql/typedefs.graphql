@@ -1,0 +1,54 @@
+type Query {
+    hello: String
+    helloName(name: String!): String
+
+    helloAuth: String!
+
+    users: [User]
+    user(id: Int!): User
+
+    tickets: [Ticket]
+    ticket(id: Int!): Ticket
+
+    comments: [Comment]
+    comment(id: Int!): Comment
+
+    stats: [PriorityStats]
+}
+
+type PriorityStats {
+    priority: Int
+    numTicket: Int
+    numComment: Int
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    isAdmin: Boolean!
+
+    # Asszociációk
+    tickets: [Ticket]
+    comments: [Comment]
+}
+
+type Ticket {
+    id: ID!
+    title: String!
+    priority: Int!
+    done: Boolean!
+
+    # Asszociációk
+    users: [User]
+    comments: [Comment]
+}
+
+type Comment {
+    id: ID!
+    text: String!
+    
+    # Asszociációk
+    user: User
+    ticket: Ticket
+}

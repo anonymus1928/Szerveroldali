@@ -1,5 +1,6 @@
 const express = require('express');
 require('express-async-errors');
+const expressPlayground = require('graphql-playground-middleware-express').default
 const app = express();
 
 app.use(express.json());
@@ -11,6 +12,9 @@ app.use(express.json());
 
 app.use('/tickets', require('./routers/tickets'));
 app.use('/auth', require('./routers/auth'));
+
+app.use('/graphql', require('./graphql'));
+app.use('/playground', expressPlayground({ endpoint: '/graphql' }));
 
 app.use((err, req, res, next) => {
     if(res.headerSent) {
