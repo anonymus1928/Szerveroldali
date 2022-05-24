@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.16"
+  },
+  "dependencies": {
+    "@socket.io/admin-ui": "^0.3.0",
+    "socket.io": "^4.5.0"
+  }
+}

@@ -18,7 +18,7 @@ const auth = (fn) => {
         
         // await-tel ha a promise rejected, akkor hibát dob (err throw)
         await new Promise((resolve, reject) => {
-            authMw(context, null, (err) => {
+            authMW(context, null, (err) => {
                 if (err) {
                     reject(err);
                 }
@@ -70,6 +70,53 @@ module.exports = {
             });
             return stats.map(s => s.toJSON());
         }
+    },
+
+    Mutation: {
+        createTicket: auth(async(_, {title, priority, text}, context) => {
+            if (![0,1,2,3].includes(priority)) {
+                throw new Error('A prioritás 0 és 4 közötti egész szám lehet.');
+            }
+
+            const ticket = await Ticket.create({
+                title,
+                priority,
+            });
+            await ticket.addUser(context.user.id);
+            await ticket.createComment({
+                text,
+                UserId: context.user.id,
+            });
+            const sendTicket = await Ticket.findByPk(ticket.id, {
+                include: [
+                    {
+                        model: Comment,
+                        attributes: [ 'id', 'text' ],
+                        include: [
+                            {
+                                model: User,
+                                attributes: { exclude: [ 'createdAt', 'updatedAt', 'password' ] }
+                            }
+                        ]
+                    },
+                    {
+                        model: User,
+                        as: "Users",
+                        attributes: { exclude: [ 'createdAt', 'updatedAt', 'password' ] },
+                        through: { attributes: [] } // ez azért kell, hogy ne szemetelje bele a pivot táblát
+                    }
+                ]
+            });
+            return sendTicket;
+        }),
+        deleteTicket: auth(async(_, { ticketId }, context) => {
+            const ticket = await Ticket.findByPk(ticketId);
+            if (!ticket) {
+                throw new Error('A megadott id-jú ticket nem létezik!');
+            }
+            await ticket.destroy();
+            return true;
+        })
     },
 
     User: {

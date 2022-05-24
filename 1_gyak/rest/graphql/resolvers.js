@@ -19,7 +19,7 @@ const auth = (fn) => {
 
         // await-tel ha a promise rejected, akkor hibát dob (err throw)
         await new Promise((resolve, reject) => {
-            authMw(context, null, (err) => {
+            authMW(context, null, (err) => {
                 if (err) {
                     reject(err);
                 }
@@ -68,6 +68,26 @@ module.exports = {
             });
             return prio.map(p => p.toJSON());
         }
+    },
+
+    Mutation: {
+        createTicket: auth( async (_, { title, priority, text }, context) => {
+            if (![0,1,2,3].includes(priority)) {
+                throw new Error('A priority 0 és 4 közötti egész szám lehet.');
+            }
+            const ticket = await Ticket.create({ title, priority, done: false });
+            await ticket.addUser(context.user.id);
+            await ticket.createComment({ text, UserId: context.user.id });
+            return ticket;
+        }),
+        deleteTicket: auth(async (_, { ticketId }, context) => {
+            const ticket = await Ticket.findByPk(ticketId);
+            if (!ticket) {
+                throw new Error('A megadott id-hoz nem tartozik ticket.');
+            }
+            await ticket.destroy();
+            return true;
+        }),
     },
 
     User: {

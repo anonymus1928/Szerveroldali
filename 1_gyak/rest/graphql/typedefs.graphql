@@ -16,6 +16,11 @@ type Query {
     stats: [PriorityStats]
 }
 
+type Mutation {
+    createTicket(title: String!, priority: Int!, text: String!): Ticket!
+    deleteTicket(ticketId: Int!): Boolean!
+}
+
 type PriorityStats {
     priority: Int
     numTicket: Int
