@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Comment;
+use App\Models\Ticket;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +14,17 @@ class CommentSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\Comment::factory(10)->create();
+        $tickets = Ticket::all();
+        foreach ($tickets as $ticket) {
+            Comment::factory()
+                        ->for($ticket)
+                        ->create(['user_id' => $ticket->author->first()->id]);
+            $users = $ticket->notAuthor->random(3);
+            foreach ($users as $user) {
+                Comment::factory()
+                            ->for($ticket)
+                            ->create(['user_id' => $user->id]);
+            }
+        }
     }
 }

@@ -13,9 +13,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         \App\Models\User::factory()->create([
-            'name' => 'Admin user',
-            'is_admin' => true,
+            'name' => 'Admin User',
             'email' => 'a@a.hu',
+            'is_admin' => true,
         ]);
 
         \App\Models\User::factory(10)->create();
@@ -24,5 +24,6 @@ class DatabaseSeeder extends Seeder
             TicketSeeder::class,
             CommentSeeder::class,
         ]);
+
     }
 }

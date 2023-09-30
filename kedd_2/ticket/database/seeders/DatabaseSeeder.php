@@ -14,8 +14,8 @@ class DatabaseSeeder extends Seeder
     {
         \App\Models\User::factory()->create([
             'name' => 'Admin User',
-            'is_admin' => true,
             'email' => 'a@a.hu',
+            'is_admin' => true,
         ]);
 
         \App\Models\User::factory(10)->create();
@@ -24,5 +24,6 @@ class DatabaseSeeder extends Seeder
             TicketSeeder::class,
             CommentSeeder::class,
         ]);
+
     }
 }
