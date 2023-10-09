@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Models\Ticket;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,8 +16,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::middleware('auth')->group(function () {
+    Route::get('/', function () {
+        // return view('ticket.tickets');
+        $tickets = Auth::user()->tickets;
+        return view('ticket.tickets', ['tickets' => $tickets]);
+    });
+
+    Route::get('/{id}', function ($id) {
+        $ticket = Ticket::find($id);
+        if (!$ticket || !$ticket->users->contains(Auth::user())) {
+            abort(404);
+        }
+        return view('ticket.ticket', ['ticket' => $ticket]);
+    })->where('id', '[0-9]+');
 });
 
 Route::get('/dashboard', function () {

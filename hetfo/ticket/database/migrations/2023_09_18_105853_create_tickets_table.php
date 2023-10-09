@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->enum('priority', [0,1,2,3]);
+            $table->boolean('done')->default(false);
             $table->timestamps();
         });
     }

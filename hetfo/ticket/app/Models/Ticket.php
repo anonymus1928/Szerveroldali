@@ -14,6 +14,7 @@ class Ticket extends Model
     protected $fillable = [
         'title',
         'priority',
+        'done',
     ];
 
     public function comments(): HasMany {
