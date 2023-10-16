@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TicketController;
 use App\Models\Ticket;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -17,19 +18,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth')->group(function () {
+    Route::resource('tickets', TicketController::class);
     Route::get('/', function () {
-        // return view('ticket.tickets');
-        $tickets = Auth::user()->tickets;
-        return view('ticket.tickets', ['tickets' => $tickets]);
+        return redirect()->route('tickets.index');
     });
 
-    Route::get('/{id}', function ($id) {
-        $ticket = Ticket::find($id);
-        if (!$ticket || !$ticket->users->contains(Auth::user())) {
-            abort(404);
-        }
-        return view('ticket.ticket', ['ticket' => $ticket]);
-    })->where('id', '[0-9]+');
+    // Route::get('/{id}', [TicketController::class, 'show'])->where('id', '[0-9]+')->name('ticket.show');
 });
 
 Route::get('/dashboard', function () {

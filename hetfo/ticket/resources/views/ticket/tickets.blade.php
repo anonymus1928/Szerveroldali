@@ -52,7 +52,7 @@
                         </td>
                         <td>
                             <div>
-                                <a href="feladat.html">{{ $ticket->title }}</a>
+                                <a href="{{ route('tickets.show', ['ticket' => $ticket->id]) }}">{{ $ticket->title }}</a>
                             </div>
                         </td>
                         <td>
@@ -67,9 +67,9 @@
                             </span>
                         </td>
                         <td>
-                            <button class="btn btn-outline-secondary">
+                            <a class="btn btn-outline-secondary" href="{{ route('tickets.show', ['ticket' => $ticket->id]) }}">
                                 <i class="fa-solid fa-angles-right fa-fw"></i>
-                            </button>
+                            </a>
                         </td>
                     </tr>
                 @endforeach
