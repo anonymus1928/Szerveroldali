@@ -40,7 +40,7 @@
                             <a class="nav-link" href="{{ route('tickets.index') }}">Nyitott feladatok</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="lezart_feladatok.html">Lezárt feladatok</a>
+                            <a class="nav-link" href="{{ route('tickets.closed') }}">Lezárt feladatok</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('tickets.create') }}">Új feladat</a>

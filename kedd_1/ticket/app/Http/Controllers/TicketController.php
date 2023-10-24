@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,18 @@ class TicketController extends Controller
      */
     public function index()
     {
-        $tickets = Auth::user()->tickets;
+        $tickets = Auth::user()->tickets()
+            ->where('done', false)
+            ->orderByDesc(Comment::select('created_at')
+            ->whereColumn('comments.ticket_id', 'tickets.id')
+            ->latest()
+            ->take(1)
+            )->paginate(5);
+        // dd($tickets);
+        // $tickets = Auth::user()->tickets()->where('done', false)->paginate(5);
+        // $tickets = Auth::user()->tickets()->where('done', false)->orderBy(function ($ticket) {
+        //     return $ticket->comments->sortByDesc('created_at')->first();
+        // })->paginate(5);
         return view('ticket.tickets', ['tickets' => $tickets]);
     }
 
@@ -67,7 +79,11 @@ class TicketController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $ticket = Ticket::find($id);
+        if (!$ticket || !$ticket->users->contains(Auth::user())) {
+            abort(404);
+        }
+        return view('ticket.ticket_form', ['ticket' => $ticket]);
     }
 
     /**
@@ -75,7 +91,19 @@ class TicketController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $ticket = Ticket::find($id);
+        if (!$ticket || !$ticket->users->contains(Auth::user())) {
+            abort(404);
+        }
+
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'priority' => 'required|integer|min:0|max:3',
+        ]);
+
+        $ticket->update($validated);
+
+        return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }
 
     /**
@@ -83,6 +111,48 @@ class TicketController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $ticket = Ticket::find($id);
+        if (!$ticket || !$ticket->users->contains(Auth::user())) {
+            abort(404);
+        }
+
+        $ticket->delete();
+
+        return redirect()->route('tickets.index');
+    }
+
+    /**
+     * Display a listing of the closed tickets.
+     */
+    public function indexClosed()
+    {
+        // $tickets = Auth::user()->tickets->where('done', true)->sortByDesc(function ($ticket) {
+        //     return $ticket->comments->sortByDesc('created_at')->first();
+        // });
+        $tickets = Auth::user()->tickets()->where('done', true)->paginate(5);
+        return view('ticket.tickets', ['tickets' => $tickets]);
+    }
+
+    /**
+     * Store a newly created comment in storage.
+     */
+    public function storeComment(Request $request, string $id)
+    {
+        $ticket = Ticket::find($id);
+        if (!$ticket || !$ticket->users->contains(Auth::user())) {
+            abort(404);
+        }
+
+        $validated = $request->validate([
+            'text' => 'required|string|max:1000',
+            'file' => 'nullable|file'
+        ]);
+
+        $ticket->comments()->create([
+            'text' => $validated['text'],
+            'user_id' => Auth::id(),
+        ]);
+
+        return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }
 }

@@ -21,6 +21,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/', function () {
         return redirect()->route('tickets.index');
     });
+    Route::get('tickets/closed', [TicketController::class, 'indexClosed'])->name('tickets.closed');
+    Route::post('tickets/{ticket}/comment', [TicketController::class, 'storeComment'])->name('tickets.storeComment');
     Route::resource('tickets', TicketController::class);
 
 });

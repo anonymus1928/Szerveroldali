@@ -70,5 +70,6 @@
                 @endforeach
             </tbody>
         </table>
+        {{ $tickets->onEachSide(5)->links() }}
     </div>
 @endsection

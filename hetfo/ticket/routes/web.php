@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth')->group(function () {
+    Route::get('/tickets/closed', [TicketController::class, 'indexClosed'])->name('tickets.closed');
+    Route::post('/tickets/{ticket}/comment', [TicketController::class, 'storeComment'])->name('ticket.storeComment');
     Route::resource('tickets', TicketController::class);
     Route::get('/', function () {
         return redirect()->route('tickets.index');
