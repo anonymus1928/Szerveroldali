@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
     });
     Route::get('tickets/closed', [TicketController::class, 'indexClosed'])->name('tickets.closed');
     Route::post('tickets/{ticket}/comment', [TicketController::class, 'storeComment'])->name('tickets.storeComment');
+    Route::get('tickets/{ticket}/users', [TicketController::class, 'indexUsers'])->name('tickets.indexUsers');
     Route::resource('tickets', TicketController::class);
 });
 

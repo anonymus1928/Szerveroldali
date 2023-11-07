@@ -54,10 +54,21 @@ class TicketController extends Controller
 
         $ticket->users()->attach(Auth::id(), ['is_author' => true, 'is_responsible' => true]);
 
-        $ticket->comments()->create([
-            'text' => $validated['text'],
-            'user_id' => Auth::id(),
-        ]);
+        if($request->hasFile('file')) {
+            $path = $request->file('file')->store();
+
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'filename' => $request->file('file')->getClientOriginalName(),
+                'filename_hash' => $path,
+                'user_id' => Auth::id(),
+            ]);
+        } else {
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }
@@ -149,10 +160,21 @@ class TicketController extends Controller
             'file' => 'nullable|file',
         ]);
 
-        $ticket->comments()->create([
-            'text' => $validated['text'],
-            'user_id' => Auth::id(),
-        ]);
+        if($request->hasFile('file')) {
+            $path = $request->file('file')->store();
+
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'filename' => $request->file('file')->getClientOriginalName(),
+                'filename_hash' => $path,
+                'user_id' => Auth::id(),
+            ]);
+        } else {
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }

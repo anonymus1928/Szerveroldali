@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -54,10 +55,21 @@ class TicketController extends Controller
 
         $ticket->users()->attach(Auth::id(), ['is_author' => true, 'is_responsible' => true]);
 
-        $ticket->comments()->create([
-            'text' => $validated['text'],
-            'user_id' => Auth::id(),
-        ]);
+        if($request->hasFile('file')) {
+            $path = $request->file('file')->store();
+
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'filename' => $request->file('file')->getClientOriginalName(),
+                'filename_hash' => $path,
+                'user_id' => Auth::id(),
+            ]);
+        } else {
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }
@@ -148,11 +160,39 @@ class TicketController extends Controller
             'file' => 'nullable|file'
         ]);
 
-        $ticket->comments()->create([
-            'text' => $validated['text'],
-            'user_id' => Auth::id(),
-        ]);
+        if($request->hasFile('file')) {
+            $path = $request->file('file')->store();
+
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'filename' => $request->file('file')->getClientOriginalName(),
+                'filename_hash' => $path,
+                'user_id' => Auth::id(),
+            ]);
+        } else {
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'user_id' => Auth::id(),
+            ]);
+        }
+
 
         return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
+    }
+
+
+    // TODO: REST végpont készítése a userek fel és levételére
+
+
+    public function indexUsers($id) {
+        $ticket = Ticket::find($id);
+        if (!$ticket || !$ticket->users->contains(Auth::user())) {
+            abort(404);
+        }
+
+        $usersOnTicket = $ticket->users;
+        $usersNotOnTicket = User::all()->diff($usersOnTicket);
+
+        return view('ticket.ticket_users', ['ticket' => $ticket, 'usersOnTicket' => $usersOnTicket, 'usersNotOnTicket' => $usersNotOnTicket]);
     }
 }

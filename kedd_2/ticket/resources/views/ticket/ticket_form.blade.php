@@ -5,7 +5,7 @@
 @section('content')
     <h1 class="ps-3">@isset($ticket) {{ $ticket->title . ' módosítás' }} @else Új feladat @endisset</h1>
     <hr />
-    <form method="post" action="{{ isset($ticket) ? route('tickets.update', ['ticket' => $ticket->id]) : route('tickets.store') }}">
+    <form method="post" action="{{ isset($ticket) ? route('tickets.update', ['ticket' => $ticket->id]) : route('tickets.store') }}" enctype="multipart/form-data">
         @csrf
         @method('put')
         <div class="row mb-3">

@@ -17,9 +17,9 @@ class TicketController extends Controller
         $tickets = Auth::user()->tickets()
             ->where('done', false)
             ->orderByDesc(Comment::select('created_at')
-            ->whereColumn('comments.ticket_id', 'tickets.id')
-            ->latest()
-            ->take(1)
+                ->whereColumn('comments.ticket_id', 'tickets.id')
+                ->latest()
+                ->take(1)
             )->paginate(5);
         // dd($tickets);
         // $tickets = Auth::user()->tickets()->where('done', false)->paginate(5);
@@ -148,10 +148,20 @@ class TicketController extends Controller
             'file' => 'nullable|file',
         ]);
 
-        $ticket->comments()->create([
-            'text' => $validated['text'],
-            'user_id' => Auth::id(),
-        ]);
+        if($request->hasFile('file')) {
+            $path = $request->file('file')->store();
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'user_id' => Auth::id(),
+                'filename' => $request->file('file')->getClientOriginalName(),
+                'filename_hash' => $path,
+            ]);
+        } else {
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         // dd($ticket, $ticket->comments);
         return redirect()->route('tickets.show', ['ticket' => $ticket->id]);

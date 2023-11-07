@@ -23,9 +23,9 @@
         <a class="btn btn-primary mx-1" href="{{ route('tickets.edit', ['ticket' => $ticket->id]) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Szerkesztés">
             <i class="fa-solid fa-pen-to-square fa-fw fa-xl"></i>
         </a>
-        <button class="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Felhasználók">
+        <a class="btn btn-primary mx-1" href="{{ route('tickets.indexUsers', ['ticket' => $ticket->id]) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Felhasználók">
             <i class="fa-solid fa-users fa-fw fa-xl"></i>
-        </button>
+        </a>
         <button class="btn btn-success mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Lezárás">
             <i class="fa-solid fa-check fa-fw fa-xl"></i>
         </button>
@@ -43,7 +43,9 @@
         <div class="card mb-3">
             <div class="card-header d-flex">
                 <div class="me-auto"><span class="badge bg-secondary">#{{ $loop->index }}</span> | <strong>{{ $comment->user->name }}</strong> | {{ $comment->created_at }}</div>
-                <div><a href="#"><i class="fa-solid fa-download"></i></a></div>
+                @if($comment->filename)
+                    <div><a href="{{ Illuminate\Support\Facades\Storage::url($comment->filename_hash) }}" download="{{ $comment->filename }}"><i class="fa-solid fa-download"></i></a></div>
+                @endif
             </div>
             <div class="card-body">
                 {{ $comment->text }}
@@ -53,7 +55,7 @@
 
     <hr>
     <h2>Új hozzászólás írása</h2>
-    <form action="{{ route('tickets.storeComment', ['ticket' => $ticket->id]) }}" method="post">
+    <form action="{{ route('tickets.storeComment', ['ticket' => $ticket->id]) }}" method="post" enctype="multipart/form-data">
         @csrf
         <div class="mb-3">
             <textarea class="form-control @error('text') is-invalid @enderror" name="text" id="text" cols="30" rows="10" placeholder="Hozzászólás...">{{ old('text') }}</textarea>

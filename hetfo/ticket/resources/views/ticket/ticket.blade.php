@@ -49,7 +49,7 @@
             <div class="card-header d-flex">
                 <div class="me-auto"><span class="badge bg-secondary">#{{ $loop->index }}</span> | <strong>{{ $comment->user->name }}</strong> | {{ $comment->created_at }}</div>
                 @if ($comment->filename)
-                    <div><a href="#"><i class="fa-solid fa-download"></i></a></div>
+                    <div><a href="{{ Illuminate\Support\Facades\Storage::url($comment->filename_hash) }}" download="{{ $comment->filename }}"><i class="fa-solid fa-download"></i></a></div>
                 @endif
             </div>
             <div class="card-body">
@@ -59,7 +59,7 @@
     @endforeach
     <hr>
     <h2>Új hozzászólás írása</h2>
-    <form method="post" action="{{ route('ticket.storeComment', ['ticket' => $ticket->id]) }}">
+    <form method="post" action="{{ route('ticket.storeComment', ['ticket' => $ticket->id]) }}" enctype="multipart/form-data">
         @csrf
         <div class="mb-3">
             <textarea class="form-control @error('text') is-invalid @enderror" name="text" id="text" cols="30" rows="10" placeholder="Hozzászólás...">{{ old('text') }}</textarea>
