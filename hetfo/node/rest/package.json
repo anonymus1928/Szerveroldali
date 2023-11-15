@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "fastify": "^4.24.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "scripts": {
+    "dev": "npx nodemon server.js"
+  }
+}
