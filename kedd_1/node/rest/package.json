@@ -1,15 +1,20 @@
 {
   "dependencies": {
+    "@fastify/autoload": "^5.8.0",
+    "@fastify/jwt": "^7.2.3",
+    "bcrypt": "^5.1.1",
     "fastify": "^4.24.3",
     "sequelize": "^6.35.0",
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.3.1",
     "nodemon": "^3.0.1",
+    "rimraf": "^5.0.5",
     "sequelize-cli": "^6.6.2"
   },
   "scripts": {
     "dev": "npx nodemon server.js",
-    "db": "npx rimraf database/database.sqlite && npx sequelize db:migrate --debug && npx sequelize db:seed:all"
+    "db": "npx rimraf database/database.sqlite && npx sequelize db:migrate --debug && npx sequelize db:seed:all --debug"
   }
 }

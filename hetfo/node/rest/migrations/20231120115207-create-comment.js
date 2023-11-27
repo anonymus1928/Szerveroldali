@@ -2,26 +2,37 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Tickets', {
+        await queryInterface.createTable('Comments', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER,
             },
-            title: {
+            text: {
                 allowNull: false,
                 type: Sequelize.STRING,
             },
-            priority: {
-                allowNull: false,
-                type: Sequelize.ENUM,
-                values: [0, 1, 2, 3],
+            filename: {
+                type: Sequelize.STRING,
             },
-            done: {
+            UserId: {
                 allowNull: false,
-                defaultValue: false,
-                type: Sequelize.BOOLEAN,
+                onDelete: 'cascade',
+                references: {
+                    model: 'Users',
+                    key: 'id',
+                },
+                type: Sequelize.INTEGER,
+            },
+            TicketId: {
+                allowNull: false,
+                onDelete: 'cascade',
+                references: {
+                    model: 'Tickets',
+                    key: 'id',
+                },
+                type: Sequelize.INTEGER,
             },
             createdAt: {
                 allowNull: false,
@@ -34,6 +45,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('Tickets');
+        await queryInterface.dropTable('Comments');
     },
 };

@@ -15,8 +15,8 @@ module.exports = {
             },
             priority: {
                 allowNull: false,
-                type: Sequelize.ENUM,
                 values: [0, 1, 2, 3],
+                type: Sequelize.ENUM,
             },
             done: {
                 allowNull: false,

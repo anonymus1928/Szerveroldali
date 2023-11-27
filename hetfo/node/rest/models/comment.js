@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     Comment.init(
         {
             text: DataTypes.STRING,
+            filename: DataTypes.STRING,
         },
         {
             sequelize,

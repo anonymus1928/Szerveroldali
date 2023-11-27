@@ -1,27 +1,30 @@
 'use strict';
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Tickets', {
+        await queryInterface.createTable('TicketUser', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER,
             },
-            title: {
+            UserId: {
                 allowNull: false,
-                type: Sequelize.STRING,
+                references: {
+                    model: 'Users',
+                    key: 'id',
+                },
+                type: Sequelize.INTEGER,
             },
-            priority: {
+            TicketId: {
                 allowNull: false,
-                type: Sequelize.ENUM,
-                values: [0, 1, 2, 3],
-            },
-            done: {
-                allowNull: false,
-                defaultValue: false,
-                type: Sequelize.BOOLEAN,
+                references: {
+                    model: 'Tickets',
+                    key: 'id',
+                },
+                type: Sequelize.INTEGER,
             },
             createdAt: {
                 allowNull: false,
@@ -33,7 +36,8 @@ module.exports = {
             },
         });
     },
+
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('Tickets');
+        await queryInterface.dropTable('TicketUser');
     },
 };
