@@ -24,12 +24,6 @@ fastify.register(autoload, {
     dir: join(__dirname, 'routes'),
 });
 
-// Declare a route
-// fastify.get('/', async (request, reply) => {
-//     reply.type('application/json').code(200);
-//     reply.send({ hello: 'there' });
-// });
-
 // Run the server!
 fastify.listen({ port: 4000 }, (err, address) => {
     if (err) throw err;

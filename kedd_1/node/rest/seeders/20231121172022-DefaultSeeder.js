@@ -13,7 +13,7 @@ module.exports = {
         await User.create({
             name: 'Super Admin',
             email: 'q@q.hu',
-            password: 'passwordEZCSAKPLACEHOLDER',
+            password: 'password',
             is_admin: true,
         });
         for (let i = 0; i < userCount - 1; i++) {
@@ -21,7 +21,7 @@ module.exports = {
                 await User.create({
                     name: faker.person.fullName(),
                     email: faker.internet.email(),
-                    password: 'passwordEZCSAKPLACEHOLDER',
+                    password: 'password',
                     is_admin: faker.datatype.boolean(),
                 })
             );

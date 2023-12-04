@@ -20,6 +20,7 @@ module.exports = {
                     key: 'id',
                 },
                 type: Sequelize.INTEGER,
+                onDelete: 'cascade',
             },
             TicketId: {
                 allowNull: false,
@@ -28,6 +29,7 @@ module.exports = {
                     key: 'id',
                 },
                 type: Sequelize.INTEGER,
+                onDelete: 'cascade',
             },
             createdAt: {
                 allowNull: false,

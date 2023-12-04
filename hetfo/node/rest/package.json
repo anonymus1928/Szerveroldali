@@ -1,6 +1,10 @@
 {
   "dependencies": {
+    "@fastify/autoload": "^5.8.0",
+    "@fastify/jwt": "^7.2.4",
+    "bcrypt": "^5.1.1",
     "fastify": "^4.24.3",
+    "http-status-codes": "^2.3.0",
     "sequelize": "^6.35.1",
     "sqlite3": "^5.1.6"
   },

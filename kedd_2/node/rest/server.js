@@ -16,7 +16,7 @@ fastify.decorate('auth', async function (request, reply) {
     try {
         await request.jwtVerify();
     } catch (err) {
-        reply(err);
+        reply.send(err);
     }
 });
 
@@ -24,10 +24,6 @@ fastify.decorate('auth', async function (request, reply) {
 fastify.register(autoload, {
     dir: join(__dirname, 'routes'),
 });
-
-// fastify.get('/', async (request, reply) => {
-//     return { hello: 'there' };
-// });
 
 /**
  * Run the server!
