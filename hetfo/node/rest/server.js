@@ -1,6 +1,8 @@
 const fastify = require('fastify')({ logger: true });
 const autoload = require('@fastify/autoload');
 const { join } = require('path');
+const mercurius = require('mercurius');
+const { readFileSync } = require('fs');
 
 const secret = 'supersecretsalt';
 
@@ -20,6 +22,14 @@ fastify.decorate('auth', async function (request, reply) {
 // Route-ok betöltése
 fastify.register(autoload, {
     dir: join(__dirname, 'routes'),
+});
+
+// GraphQL
+fastify.register(mercurius, {
+    schema: readFileSync('./graphql/schema.gql').toString(),
+    resolvers: require('./graphql/resolvers'),
+    graphiql: true,
+    context: (request) => request,
 });
 
 /**
