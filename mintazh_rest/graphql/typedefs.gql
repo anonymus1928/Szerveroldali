@@ -1,0 +1,9 @@
+type Query {
+    # Elemi példa:
+    helloWorld: String
+
+    # Példa paraméterezésre:
+    helloName(name: String!): String
+
+    # TODO: Készítsd el a schema hiányzó részeit
+}
