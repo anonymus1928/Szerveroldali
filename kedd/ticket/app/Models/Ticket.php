@@ -38,4 +38,12 @@ class Ticket extends Model
     public function users() : BelongsToMany {
         return $this->belongsToMany(User::class);
     }
+
+    public function owner() : BelongsToMany {
+        return  $this->belongsToMany(User::class)->wherePivot('owner', 1);
+    }
+
+    public function notOwner() : BelongsToMany {
+        return  $this->belongsToMany(User::class)->wherePivot('owner', 0);
+    }
 }
