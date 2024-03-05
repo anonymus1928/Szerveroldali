@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +14,13 @@ class TicketSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $users = User::all();
+        foreach($users as $user) {
+            $tmpUsers = $users->where('id', '!=', $user->id)->random(5);
+            Ticket::factory()
+                        ->hasAttached($user, ['owner' => 1])
+                        ->hasAttached($tmpUsers, ['owner' => 0])
+                        ->create();
+        }
     }
 }
