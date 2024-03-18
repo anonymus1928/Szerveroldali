@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,8 +16,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('tickets.index');
 });
+
+Route::get('/tickets/closed', [TicketController::class, 'indexClosed'])->name('tickets.closed');
+Route::resource('tickets', TicketController::class);
 
 Route::get('/dashboard', function () {
     return view('dashboard');
