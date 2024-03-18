@@ -69,36 +69,55 @@
         <div class="container mx-auto px-5 my-3">
             <div class="flex mx-3">
                 <div class="grow">
-                    <h1 class="text-4xl">
-                        [Feladat tárgya]
-                        <span
-                            class="badge badge-error h-full badge-lg text-white font-bold text-2xl"
-                            >Azonnal</span
-                        >
-                    </h1>
-                </div>
-                <div class="tooltip" data-tip="Szerkesztés">
-                    <button class="btn btn-outline mx-1">
-                        <i class="fa-solid fa-pen-to-square fa-fw fa-xl"></i>
-                    </button>
-                </div>
-                <div class="tooltip" data-tip="Felhasználók">
-                    <button class="btn btn-outline mx-1">
-                        <i class="fa-solid fa-users fa-fw fa-xl"></i>
-                    </button>
-                </div>
-                <div class="tooltip" data-tip="Lezárás">
-                    <button class="btn btn-outline btn-info mx-1">
-                        <i class="fa-solid fa-check fa-fw fa-xl"></i>
-                    </button>
-                </div>
-                <div class="tooltip" data-tip="Törlés">
-                    <button class="btn btn-outline btn-error mx-1">
-                        <i class="fa-solid fa-trash fa-fw fa-xl"></i>
-                    </button>
+                    <h1 class="text-4xl">Új feladat</h1>
                 </div>
             </div>
             <div class="divider"></div>
+            <form>
+                <div class="grid grid-cols-2 gap-5">
+                    <div class="w-full">
+                        <input
+                            type="text"
+                            placeholder="Tárgy"
+                            class="input input-bordered w-full"
+                            name="title"
+                            id="title"
+                        />
+                    </div>
+                    <div class="">
+                        <select
+                            class="select select-bordered w-full basis-1/2"
+                            name="priority"
+                            id="priority"
+                        >
+                            <option disabled selected>Priorítás</option>
+                            <option value="0">Alacsony</option>
+                            <option value="1">Normál</option>
+                            <option value="2">Magas</option>
+                            <option value="3">Azonnal</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="py-5 w-full">
+                    <textarea
+                        class="textarea textarea-bordered w-full"
+                        placeholder="Hiba leírása..."
+                        name="text"
+                        id="text"
+                        cols="30"
+                        rows="5"
+                    ></textarea>
+                </div>
+                <div class="pb-5">
+                    <input
+                        type="file"
+                        class="file-input file-input-bordered w-full"
+                        name="file"
+                        id="file"
+                    />
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Mentés</button>
+            </form>
         </div>
         <script src="https://cdn.tailwindcss.com"></script>
     </body>
