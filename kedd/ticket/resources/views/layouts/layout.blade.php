@@ -43,7 +43,7 @@
                     >
                         <li><a href="{{ route('tickets.index') }}">Nyitott feladatok</a></li>
                         <li><a href="{{ route('tickets.closed') }}">Lezárt feladatok</a></li>
-                        <li><a href="uj_feladat.html">Új feladat</a></li>
+                        <li><a href="{{ route('tickets.create') }}">Új feladat</a></li>
                         <li><a href="felhasznalok.html">Felhasználók (ADMIN)</a></li>
                         <li><a href="feladatok.html">Összes feladat (ADMIN)</a></li>
                     </ul>
@@ -54,7 +54,7 @@
                 <ul class="menu menu-horizontal px-1">
                     <li><a href="{{ route('tickets.index') }}">Nyitott feladatok</a></li>
                     <li><a href="{{ route('tickets.closed') }}">Lezárt feladatok</a></li>
-                    <li><a href="uj_feladat.html">Új feladat</a></li>
+                    <li><a href="{{ route('tickets.create') }}">Új feladat</a></li>
                     <li><a href="felhasznalok.html">Felhasználók (ADMIN)</a></li>
                     <li><a href="feladatok.html">Összes feladat (ADMIN)</a></li>
                 </ul>

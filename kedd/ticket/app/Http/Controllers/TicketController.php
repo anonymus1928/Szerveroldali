@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TicketController extends Controller
 {
@@ -12,7 +13,8 @@ class TicketController extends Controller
      */
     public function index()
     {
-        $tickets = Ticket::where('done', 0)->get();
+        $tickets = Auth::user()->tickets()->where('done', 0)->get();
+        // $tickets = Ticket::where('done', 0)->get();
         return view('ticket.tickets', ['tickets' => $tickets, 'closed' => false]);
     }
 
@@ -21,7 +23,8 @@ class TicketController extends Controller
      */
     public function indexClosed()
     {
-        $tickets = Ticket::where('done', 1)->get();
+        $tickets = Auth::user()->tickets()->where('done', 1)->get();
+        // $tickets = Ticket::where('done', 1)->get();
         return view('ticket.tickets', ['tickets' => $tickets, 'closed' => true]);
     }
 
@@ -30,7 +33,7 @@ class TicketController extends Controller
      */
     public function create()
     {
-        //
+        return view('ticket.ticketform');
     }
 
     /**
@@ -38,7 +41,14 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'priority' => 'required|integer|min:0|max:3',
+            'text' => 'required|string|max:1000',
+            'file' => 'nullable|file',
+        ]);
+
+        dd($validated);
     }
 
     /**
