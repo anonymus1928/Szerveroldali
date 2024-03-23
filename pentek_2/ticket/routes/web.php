@@ -19,8 +19,10 @@ Route::get('/', function () {
     return redirect()->route('tickets.index');
 });
 
-Route::get('/tickets/closed', [TicketController::class, 'indexClosed'])->name('tickets.closed');
-Route::resource('tickets', TicketController::class);
+Route::middleware('auth')->group(function () {
+    Route::get('/tickets/closed', [TicketController::class, 'indexClosed'])->name('tickets.closed');
+    Route::resource('tickets', TicketController::class);
+});
 
 Route::get('/dashboard', function () {
     return view('dashboard');
