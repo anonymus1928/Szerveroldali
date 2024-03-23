@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TicketController extends Controller
 {
@@ -12,7 +13,7 @@ class TicketController extends Controller
      */
     public function index()
     {
-        $tickets = Ticket::where('done', 0)->get();
+        $tickets = Auth::user()->tickets()->where('done', 0)->get();
         return view('ticket.tickets', ['tickets' => $tickets, 'closed' => false]);
     }
 
@@ -21,7 +22,7 @@ class TicketController extends Controller
      */
     public function indexClosed()
     {
-        $tickets = Ticket::where('done', 1)->get();
+        $tickets = Auth::user()->tickets()->where('done', 1)->get();
         return view('ticket.tickets', ['tickets' => $tickets, 'closed' => true]);
     }
 
@@ -30,7 +31,7 @@ class TicketController extends Controller
      */
     public function create()
     {
-        //
+        return view('ticket.ticket_form');
     }
 
     /**
@@ -38,7 +39,21 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'nullable|required|string',
+            'priority' => 'required|integer|min:0|max:3',
+            'text' => 'required|string|max:1000',
+            'file' => 'nullable|file',
+        ]);
+
+        $ticket = Ticket::create($validated);
+        $ticket->users()->attach(Auth::id(), ['owner' => true]);
+        $ticket->comments()->create([
+            'text' => $validated['text'],
+            'user_id' => Auth::id(),
+        ]);
+
+        return redirect()->route('tickets.index');
     }
 
     /**
@@ -46,7 +61,11 @@ class TicketController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $ticket = Auth::user()->tickets()->where('tickets.id', $id)->first();
+        if(!$ticket) {
+            return abort(404);
+        }
+        return view('ticket.ticket', ['ticket' => $ticket]);
     }
 
     /**
