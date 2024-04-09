@@ -25,9 +25,9 @@
             </h1>
         </div>
         <div class="tooltip" data-tip="Szerkesztés">
-            <button class="btn btn-outline mx-1">
+            <a class="btn btn-outline mx-1" href="{{ route('tickets.edit', ['ticket' => $ticket->id]) }}">
                 <i class="fa-solid fa-pen-to-square fa-fw fa-xl"></i>
-            </button>
+            </a>
         </div>
         <div class="tooltip" data-tip="Felhasználók">
             <button class="btn btn-outline mx-1">
@@ -40,9 +40,13 @@
             </button>
         </div>
         <div class="tooltip" data-tip="Törlés">
-            <button class="btn btn-outline btn-error mx-1">
-                <i class="fa-solid fa-trash fa-fw fa-xl"></i>
-            </button>
+            <form action="{{ route('tickets.destroy', ['ticket' => $ticket->id]) }}" method="post">
+                @csrf
+                @method('delete')
+                <button class="btn btn-outline btn-error mx-1">
+                    <i class="fa-solid fa-trash fa-fw fa-xl"></i>
+                </button>
+            </form>
         </div>
     </div>
     <div class="divider"></div>

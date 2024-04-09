@@ -40,14 +40,20 @@ class TicketController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'nullable|required|string',
+            'title' => 'required|string',
             'priority' => 'required|integer|min:0|max:3',
             'text' => 'required|string|max:1000',
-            'file' => 'nullable|file',
+            // 'file' => 'nullable|file',
         ]);
 
-        $ticket = Ticket::create($validated);
-        $ticket->users()->attach(Auth::id(), ['owner' => true]);
+        // $ticket = Ticket::create($validated);
+        // $ticket->users()->attach(Auth::id(), ['owner' => true]);
+        dd($request);
+        dd($request->file('file'));
+        if($request->hasFile('file')) {
+        }
+        return null;
+
         $ticket->comments()->create([
             'text' => $validated['text'],
             'user_id' => Auth::id(),
@@ -63,7 +69,7 @@ class TicketController extends Controller
     {
         $ticket = Auth::user()->tickets()->where('tickets.id', $id)->first();
         if(!$ticket) {
-            return abort(404);
+            abort(404);
         }
         return view('ticket.ticket', ['ticket' => $ticket]);
     }
@@ -73,7 +79,11 @@ class TicketController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $ticket = Auth::user()->tickets()->where('tickets.id', $id)->first();
+        if(!$ticket) {
+            abort(404);
+        }
+        return view('ticket.ticket_form', ['ticket' => $ticket]);
     }
 
     /**
@@ -81,7 +91,19 @@ class TicketController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'priority' => 'required|integer|min:0|max:3',
+        ]);
+
+        $ticket = Auth::user()->tickets()->where('tickets.id', $id)->first();
+        if(!$ticket) {
+            abort(404);
+        }
+
+        $ticket->update($validated);
+
+        return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }
 
     /**
@@ -89,6 +111,13 @@ class TicketController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $ticket = Auth::user()->tickets()->where('tickets.id', $id)->first();
+        if(!$ticket) {
+            abort(404);
+        }
+
+        $ticket->delete();
+
+        return redirect()->route('tickets.index');
     }
 }
