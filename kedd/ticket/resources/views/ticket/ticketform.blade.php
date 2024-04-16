@@ -17,7 +17,7 @@
         </div>
     </div>
     <div class="divider"></div>
-    <form method="POST" action="@isset($ticket) {{route('tickets.update', ['ticket' => $ticket->id])}} @else {{route('tickets.store')}} @endisset">
+    <form method="POST" action="@isset($ticket) {{route('tickets.update', ['ticket' => $ticket->id])}} @else {{route('tickets.store')}} @endisset" enctype="multipart/form-data">
         @csrf
         @isset($ticket)
             @method('PUT')

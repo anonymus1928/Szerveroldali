@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class TicketController extends Controller
 {
@@ -51,10 +53,20 @@ class TicketController extends Controller
         $ticket = Ticket::create($validated);
         $ticket->users()->attach(Auth::id(), ['owner' => true]);
 
-        $ticket->comments()->create([
-            'text' => $validated['text'],
-            'user_id' => Auth::id(),
-        ]);
+        if ($request->hasFile('file')) {
+            $filename = $request->file('file')->store();
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'user_id' => Auth::id(),
+                'filename_hash' => $filename,
+                'filename' => $request->file('file')->getClientOriginalName(),
+            ]);
+        } else {
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }
@@ -116,5 +128,11 @@ class TicketController extends Controller
         $ticket->delete();
 
         return redirect()->route('tickets.index');
+    }
+
+    // Borzalmas megoldás, kellene authorizáció és validáció
+    public function download(string $filename_hash) {
+        $comment = Comment::where('filename_hash', $filename_hash)->first();
+        return Storage::download($filename_hash, $comment->filename);
     }
 }

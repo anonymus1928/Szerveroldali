@@ -59,9 +59,10 @@
                         <div class="badge badge-neutral">#{{ $loop->index }}</div>
                         | <strong>{{ $comment->user->name }}</strong> | {{ $comment->created_at }}
                     </div>
-                    @isset($ticket->filename)
+                    @isset($comment->filename)
                         <div>
-                            <a href="#"><i class="fa-solid fa-download"></i></a>
+                            <a href="{{ Storage::url($comment->filename_hash) }}" download="{{ $comment->filename }}"><i class="fa-solid fa-download"></i></a>
+                            <a href="{{ route('download', ['filename_hash' => $comment->filename_hash]) }}" download="{{ $comment->filename }}"><i class="fa-solid fa-download"></i></a>
                         </div>
                     @endif
                 </h2>
