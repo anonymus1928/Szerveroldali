@@ -1,3 +1,6 @@
+const { readdir, readFile, writeFile } = require('fs');
+const cowsay = require("cowsay");
+
 // Async callback
 // console.log('START');
 // readdir('./inputs', (err, files) => {
@@ -18,6 +21,7 @@
 // });
 // console.log('STOP');
 
+// promisify(fn);
 const promisify = fn => {
     return (...args) => {
         return new Promise((resolve, reject) => {
@@ -33,4 +37,29 @@ const promisify = fn => {
     };
 };
 
-// promisify(fn);
+const pReaddir = promisify(readdir);
+const preadFile = promisify(readFile);
+const pWriteFile = promisify(writeFile);
+
+console.log('START');
+pReaddir('./inputs')
+    .then(files => {
+        // console.log(files);
+        const promises = files.map(file => preadFile(`./inputs/${file}`));
+        // console.log(promises);
+        return Promise.all(promises);
+    })
+    .then(contents => {
+        // console.log(contents);
+        contents = contents.map(content => content.toString());
+        // console.log(contents);
+        return contents.join('\n');
+    })
+    .then(output => pWriteFile('./output.txt', output))
+    .then(() => console.log('Vége'))
+    .catch(err => console.error(cowsay.say({
+        text : err.message,
+        e : "xX",
+        T : "U "
+    })));
+console.log('STOP');
