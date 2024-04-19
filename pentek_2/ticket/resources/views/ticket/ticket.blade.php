@@ -61,7 +61,8 @@
                     </div>
                     @isset($comment->filename)
                         <div>
-                            <a href="#"><i class="fa-solid fa-download"></i></a>
+                            <a href="{{ Storage::url($comment->filename_hash) }}" download="{{ $comment->filename }}"><i class="fa-solid fa-download"></i></a>
+                            <a href="{{ route('download', ['filename' => $comment->filename_hash]) }}"><i class="fa-solid fa-download"></i></a>
                         </div>
                     @endif
                 </h2>

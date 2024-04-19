@@ -20,6 +20,7 @@ Route::get('/', function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/download/{filename}', [TicketController::class, 'download'])->name('download');
     Route::get('/tickets/closed', [TicketController::class, 'indexClosed'])->name('tickets.closed');
     Route::resource('tickets', TicketController::class);
 });
