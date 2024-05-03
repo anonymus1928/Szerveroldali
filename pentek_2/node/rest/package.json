@@ -1,0 +1,27 @@
+{
+  "name": "rest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "dev": "npx nodemon -e js,mjs,json,gql server.js",
+    "db": "npx rimraf database/database.sqlite && npx sequelize db:migrate --debug && npx sequelize db:seed:all --debug",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/autoload": "^5.8.0",
+    "@fastify/jwt": "^8.0.0",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.26.2",
+    "sequelize": "^6.37.3",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "nodemon": "^3.1.0",
+    "rimraf": "^5.0.5",
+    "sequelize-cli": "^6.6.2"
+  }
+}
