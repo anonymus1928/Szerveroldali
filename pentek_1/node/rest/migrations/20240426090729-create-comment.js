@@ -19,6 +19,7 @@ module.exports = {
           model: 'Users',
           key: 'id',
         },
+        onDelete: 'cascade',
         type: Sequelize.INTEGER
       },
       TicketId: {
@@ -27,6 +28,7 @@ module.exports = {
           model: 'Tickets',
           key: 'id',
         },
+        onDelete: 'cascade',
         type: Sequelize.INTEGER
       },
       createdAt: {

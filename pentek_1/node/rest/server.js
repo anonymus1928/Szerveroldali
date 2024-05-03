@@ -3,6 +3,9 @@ const fastify = require('fastify')({
     logger: true,
 });
 const autoload = require('@fastify/autoload');
+const { readdirSync } = require('fs');
+const { request } = require('http');
+const mercurius = require('mercurius');
 const { join } = require('path');
 require('dotenv').config();
 
@@ -25,6 +28,14 @@ fastify.decorate('auth', async function (request, reply) {
 // Route-ok automatikus betöltése
 fastify.register(autoload, {
     dir: join(__dirname, 'routes'),
+});
+
+// GraphQL
+fastify.register(mercurius, {
+    schema: readdirSync('./graphql/schema.gql').toString(),
+    resolvers: require('./graphql/resolvers'),
+    graphiql: true,
+    context: request => request
 });
 
 // Run the server!
