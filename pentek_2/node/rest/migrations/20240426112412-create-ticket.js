@@ -20,6 +20,7 @@ module.exports = {
       },
       done: {
         allowNull: false,
+        defaultValue: false,
         type: Sequelize.BOOLEAN
       },
       createdAt: {
