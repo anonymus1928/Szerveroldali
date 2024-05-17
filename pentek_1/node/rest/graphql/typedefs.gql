@@ -1,0 +1,59 @@
+type Query {
+    hello: String!
+    helloName(name: String!): String
+    add(x: Int!, y: Int!): Int!
+
+    who: String!
+
+    users: [User]
+    user(id: ID!): User
+
+    tickets: [Ticket]
+    ticket(id: ID!): Ticket
+
+    comments: [Comment]
+    comment(id: ID!): Comment
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    password: String!
+    is_admin: Boolean!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+
+    # Asszociációk
+    tickets: [Ticket]
+    comments: [Comment]
+}
+
+type Ticket {
+    id: ID!
+    title: String!
+    priority: Int!
+    done: Boolean!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+
+    # Asszociációk
+    users: [User]
+    comments: [Comment]
+}
+
+type Comment {
+    id: ID!
+    text: String!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+
+    # Asszociációk
+    ticket: Ticket!
+    user: User!
+}
+
+type Mutation {
+    createTicket(title: String!, priority: Int!, text: String!): Ticket!
+    deleteTicket(id: ID!): Boolean!
+}

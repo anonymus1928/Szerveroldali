@@ -7,6 +7,7 @@ const { readdirSync } = require('fs');
 const { request } = require('http');
 const mercurius = require('mercurius');
 const { join } = require('path');
+const registerGraphQL = require('./graphql');
 require('dotenv').config();
 
 const port = process.env.PORT || 4000;
@@ -31,12 +32,7 @@ fastify.register(autoload, {
 });
 
 // GraphQL
-fastify.register(mercurius, {
-    schema: readdirSync('./graphql/schema.gql').toString(),
-    resolvers: require('./graphql/resolvers'),
-    graphiql: true,
-    context: request => request
-});
+registerGraphQL(fastify);
 
 // Run the server!
 fastify.listen({ port }, function (err, address) {
