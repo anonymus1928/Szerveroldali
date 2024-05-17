@@ -3,6 +3,7 @@ const fastify = require('fastify')({
     logger: true,
 });
 const autoload = require('@fastify/autoload');
+const registerGraphQL = require('./graphql');
 const { join } = require('path');
 
 const port = process.env.PORT || 4000;
@@ -25,6 +26,8 @@ fastify.decorate('auth', async function (request, reply) {
 fastify.register(autoload, {
     dir: join(__dirname, 'routes'),
 });
+
+registerGraphQL(fastify);
 
 // Run the server!
 fastify.listen({ port }, function (err, address) {
