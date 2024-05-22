@@ -1,0 +1,80 @@
+type Query {
+    # Elemi példa:
+    helloWorld: String
+
+    # Példa paraméterezésre:
+    helloName(name: String!): String
+
+
+    # 11. feladat
+    locations: [Location]
+    weather: [Weather]
+
+    # 12. feladat
+    location(id: ID!): Location
+
+    # 18. feladat
+    statistics: Statistics!
+}
+
+type Location {
+    id: ID!
+    name: String!
+    lat: Float!
+    lon: Float!
+    public: Boolean!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+
+    # 16. feladat
+    currentTemp: Float
+}
+
+type Weather {
+    id: ID!
+    type: String!
+    LocationId: Int!
+    temp: Float!
+    loggedAt: DateTime!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+
+    # 13. feladat
+    location: Location!
+
+    # 15. feladat
+    warnings: [Warning]
+}
+
+type Warning {
+    id: ID!
+    level: Int!
+    message: String
+    createdAt: DateTime!
+    updatedAt: DateTime!
+}
+
+type Mutation {
+    # 14. feladat
+    createWeather(input: CreateWeatherInput): Weather
+
+    # 17. feladat
+    setPublic(LocationId: ID!, public: Boolean!): String!
+}
+
+# 14. feladat
+input CreateWeatherInput {
+    type: String!
+    LocationId: ID!
+    temp: Float!
+    loggedAt: DateTime!
+}
+
+# 18. feladat
+type Statistics {
+    locationCount: Int!
+    averageTemp: Float!
+    over30Celsius: Int!
+    multipleWarnings: Int!
+    mostActiveLocation: Location!
+}
