@@ -43,7 +43,7 @@
                             <a class="nav-link" href="lezart_feladatok.html">Lezárt feladatok</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="uj_feladat.html">Új feladat</a>
+                            <a class="nav-link" href="{{ route('tickets.create') }}">Új feladat</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="felhasznalok.html">Felhasználók (ADMIN)</a>
