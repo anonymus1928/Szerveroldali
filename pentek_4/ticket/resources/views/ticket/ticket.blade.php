@@ -22,18 +22,22 @@
                 @default
 
             @endswitch</h1>
-        <button class="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Szerkesztés">
+        <a href="{{ route('tickets.edit', ['ticket' => $ticket->id]) }}" class="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Szerkesztés">
             <i class="fa-solid fa-pen-to-square fa-fw fa-xl"></i>
-        </button>
+        </a>
         <button class="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Felhasználók">
             <i class="fa-solid fa-users fa-fw fa-xl"></i>
         </button>
         <button class="btn btn-success mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Lezárás">
             <i class="fa-solid fa-check fa-fw fa-xl"></i>
         </button>
-        <button class="btn btn-danger mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Törlés">
-            <i class="fa-solid fa-trash fa-fw fa-xl"></i>
-        </button>
+        <form action="{{ route('tickets.destroy', ['ticket' => $ticket->id]) }}" method="post">
+            @csrf
+            @method('delete')
+            <button class="btn btn-danger mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Törlés">
+                <i class="fa-solid fa-trash fa-fw fa-xl"></i>
+            </button>
+        </form>
     </div>
     <hr />
     @foreach ($ticket->comments->sortBy('created_at') as $comment)
@@ -50,12 +54,19 @@
 
     <hr>
     <h2>Új hozzászólás írása</h2>
-    <form>
+    <form method="POST" action="{{ route('tickets.newComment', ['ticket' => $ticket->id]) }}">
+        @csrf
         <div class="mb-3">
-            <textarea class="form-control" name="text" id="text" cols="30" rows="10" placeholder="Hozzászólás..."></textarea>
+            <textarea class="form-control @error('text') is-invalid @enderror" name="text" id="text" cols="30" rows="10" placeholder="Hozzászólás...">{{ old('text') }}</textarea>
+            @error('text')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
         <div class="mb-3">
-            <input type="file" class="form-control" id="file">
+            <input type="file" class="form-control @error('file') is-invalid @enderror" id="file">
+            @error('file')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
         <div class="row">
             <button type="submit" class="btn btn-primary">Küldés</button>

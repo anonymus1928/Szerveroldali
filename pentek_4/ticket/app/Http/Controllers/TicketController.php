@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class TicketController extends Controller
 {
@@ -30,6 +31,7 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
+        dd($request);
         $validated = $request->validate([
             'title' => 'required|string|max:20|min:5',
             'priority' => 'required|integer|min:0|max:3',
@@ -67,7 +69,11 @@ class TicketController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $ticket = Ticket::findOrFail($id);
+        if(!Auth::user()->admin && !$ticket->users->contains(Auth::id())) {
+            abort(401);
+        }
+        return view('ticket.ticketform', ['ticket' => $ticket]);
     }
 
     /**
@@ -75,7 +81,14 @@ class TicketController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:20|min:5',
+            'priority' => 'required|integer|min:0|max:3',
+        ]);
+        $ticket = Ticket::findOrFail($id);
+        $ticket->update($validated);
+
+        return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }
 
     /**
@@ -83,6 +96,38 @@ class TicketController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $ticket = Ticket::findOrFail($id);
+        if(!Auth::user()->admin && !$ticket->users->contains(Auth::id())) {
+            abort(401);
+        }
+        $ticket->delete();
+        return redirect()->route('tickets.index');
+    }
+
+    /**
+     * Create a new comment.
+     */
+    public function newComment(Request $request, string $id) {
+        $ticket = Ticket::findOrFail($id);
+        if(!Auth::user()->admin && !$ticket->users->contains(Auth::id())) {
+            abort(401);
+        }
+        $validated = Validator::make($request->all(), [
+            'text' => 'required|string|max:1000',
+            'file' => 'nullable|file',
+        ], [
+            'required' => 'A :attribute mező kitöltése kötelező!',
+            'string' => 'A :attribute mezőnek szövegesnek kell lennie!',
+            'max' => 'A :attribute mező maximális hossza nem lépheti túl a :max-ot!',
+            'file' => 'A :attribute mezőnek fájlnak kell lennie!'
+        ], [
+            'text' => 'hozzászólás',
+            'file' => 'fájl'
+        ])->validate();
+        $ticket->comments()->create([
+            'text' => $validated['text'],
+            'user_id' => Auth::id(),
+        ]);
+        return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }
 }

@@ -16,6 +16,9 @@ Route::middleware('auth')->group(function () {
     // Route::delete('/tickets/{ticket}', [TicketController::class, 'destory'])->name('tickets.destroy');
 
     Route::resource('tickets', TicketController::class);
+    Route::post('/tickets/{ticket}/comment', [TicketController::class, 'newComment'])
+            ->name('tickets.newComment')
+            ->where('ticket', '[0-9]+');
     Route::get('/', function () {
         return redirect()->route('tickets.index');
     });

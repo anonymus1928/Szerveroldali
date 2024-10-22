@@ -14,6 +14,9 @@ Route::middleware('auth')->group(function () {
     // Route::patch('/tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update2');
     // Route::delete('/tickets/{ticket}', [TicketController::class, 'destory'])->name('tickets.destroy');
 
+    Route::post('/tickets/{ticket}/comment', [TicketController::class, 'newComment'])
+            ->name('tickets.newComment')
+            ->where('ticket', '[0-9]+');
     Route::resource('tickets', TicketController::class);
     Route::get('/', function () {
         return redirect()->route('tickets.index');
