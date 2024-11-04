@@ -44,7 +44,7 @@
         <div class="card mb-3">
             <div class="card-header d-flex">
                 <div class="me-auto"><span class="badge bg-secondary">#{{ $loop->index }}</span> | <strong>{{ $comment->user->name }}</strong> | {{ $comment->created_at }}</div>
-                <div>@if($comment->filename)<a href="#"><i class="fa-solid fa-download"></i></a>@endif</div>
+                <div>@if($comment->filename)<a href="{{ Storage::url($comment->filename_hash) }}" download="{{ $comment->filename }}" target="_blank"><i class="fa-solid fa-download"></i></a>@endif</div>
             </div>
             <div class="card-body">
                 <pre>{{ $comment->text }}</pre>
@@ -54,7 +54,7 @@
 
     <hr>
     <h2>Új hozzászólás írása</h2>
-    <form method="POST" action="{{ route('tickets.newComment', ['ticket' => $ticket->id]) }}">
+    <form method="POST" enctype="multipart/form-data" action="{{ route('tickets.newComment', ['ticket' => $ticket->id]) }}">
         @csrf
         <div class="mb-3">
             <textarea class="form-control @error('text') is-invalid @enderror" name="text" id="text" cols="30" rows="10" placeholder="Hozzászólás...">{{ old('text') }}</textarea>
@@ -63,7 +63,7 @@
             @enderror
         </div>
         <div class="mb-3">
-            <input type="file" class="form-control @error('file') is-invalid @enderror" id="file">
+            <input type="file" name="file" class="form-control @error('file') is-invalid @enderror" id="file">
             @error('file')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror

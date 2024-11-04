@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +15,15 @@ class TicketController extends Controller
      */
     public function index()
     {
-        $tickets = Auth::user()->tickets()->where('done', false)->get();
+        $tickets = Auth::user()->tickets()
+                        ->where('done', false)
+                        ->orderByDesc(
+                            Comment::select('created_at')
+                                ->whereColumn('comments.ticket_id', 'tickets.id')
+                                ->latest()
+                                ->take(1)
+                        )->paginate(5);
+        // $tickets = Auth::user()->tickets()->where('done', false)->paginate(5);
         return view('ticket.tickets', ['tickets' => $tickets]);
     }
 
@@ -31,7 +40,6 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request);
         $validated = $request->validate([
             'title' => 'required|string|max:20|min:5',
             'priority' => 'required|integer|min:0|max:3',
@@ -41,10 +49,20 @@ class TicketController extends Controller
         $ticket = Ticket::create($validated);
         $ticket->users()->attach(Auth::id(), ['owner' => true]);
 
-        $ticket->comments()->create([
-            'text' => $validated['text'],
-            'user_id' => Auth::id(),
-        ]);
+        if($request->hasFile('file')) {
+            $filename = $request->file('file')->store();
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'user_id' => Auth::id(),
+                'filename' => $request->file('file')->getClientOriginalName(),
+                'filename_hash' => $filename,
+            ]);
+        } else {
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }
@@ -124,10 +142,20 @@ class TicketController extends Controller
             'text' => 'hozzászólás',
             'file' => 'fájl'
         ])->validate();
-        $ticket->comments()->create([
-            'text' => $validated['text'],
-            'user_id' => Auth::id(),
-        ]);
+        if($request->hasFile('file')) {
+            $filename = $request->file('file')->store();
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'user_id' => Auth::id(),
+                'filename' => $request->file('file')->getClientOriginalName(),
+                'filename_hash' => $filename,
+            ]);
+        } else {
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'user_id' => Auth::id(),
+            ]);
+        }
         return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }
 }
