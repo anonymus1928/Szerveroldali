@@ -37,8 +37,17 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // CRUD
     Route::post('/tickets',            [ApiController::class, 'store'])                            ->name('api.store');
-    Route::get('/tickets/{ticket?}',   [ApiController::class, 'getTickets'])->where('id', '[0-9]+')->name('api.getTickets');
-    Route::put('/tickets/{ticket}',    [ApiController::class, 'update'])    ->where('id', '[0-9]+')->name('api.update');
-    Route::delete('/tickets/{ticket}', [ApiController::class, 'destory'])   ->where('id', '[0-9]+')->name('api.destroy');
+    Route::get('/tickets/{ticket?}',   [ApiController::class, 'getTickets'])->where('ticket', '[0-9]+')->name('api.getTickets');
+    Route::put('/tickets/{ticket}',    [ApiController::class, 'update'])    ->where('ticket', '[0-9]+')->name('api.update');
+    Route::delete('/tickets/{ticket}', [ApiController::class, 'destory'])   ->where('ticket', '[0-9]+')->name('api.destroy');
+
+    // Pagination
+    Route::get('/tickets/paginated',   [ApiController::class, 'getTicketsPaginated'])->name('api.getTicketsPaginated');
+
+    // Összetettebb végpont
+    Route::post('/tickets/{ticket}/users', [ApiController::class, 'syncUsers'])->where('ticket', '[0-9]+')->name('api.syncUsers');
+
+    // Fájl feltöltés
+    Route::post('/tickets/{ticket}/comments/{comment}', [ApiController::class, 'fileUpload'])->where(['ticket', '[0-9]+', 'comment', '[0-9]+'])->name('api.fileUpload');
 });
 

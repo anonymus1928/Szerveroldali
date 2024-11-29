@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateTicketRequest;
+use App\Http\Resources\TicketCollection;
 use App\Http\Resources\TicketResource;
 use App\Models\Comment;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ApiController extends Controller
 {
@@ -168,7 +170,92 @@ class ApiController extends Controller
         return response(status: 204);
     }
 
+    public function getTicketsPaginated(Request $request) {
+        if($request->user()->tokenCan('ticket:admin')) {
+            return new TicketCollection(Ticket::with('owner')->with('users')->with('comments')->paginate(5));
+        }
+        return new TicketCollection(Auth::user()->tickets()->with('owner')->with('users')->with('comments')->paginate(5));
+    }
 
+    public function syncUsers(Request $request, $id) {
+        $ticket = Ticket::findOrFail($id);
+
+        if(!Auth::user()->admin && !$ticket->users->contains(Auth::id())) {
+            return response()->json([
+                'error' => 'Nincs joga módosítani a ticket-et!',
+            ], 401);
+        }
+
+        $validated = $request->validate([
+            'up' => 'array',
+            'up.*' => 'integer|exists:users,id',
+            'down' => 'array',
+            'down.*' => 'integer|exists:users,id',
+        ]);
+
+        $users = $ticket->users;
+
+        $output = [
+            'successUp' => [],
+            'successDown' => [],
+            'errorUp' => [],
+            'errorDown' => [],
+        ];
+
+        foreach($validated['up'] as $userUp) {
+            if($users->contains($userUp)) {
+                $output['errorUp'][] = $userUp;
+            } else {
+                $ticket->users()->attach($userUp);
+                $output['successUp'][] = $userUp;
+            }
+        }
+
+        foreach($validated['down'] as $userDown) {
+            if($users->contains($userDown)) {
+                $ticket->users()->detach($userDown);
+                $output['successDown'][] = $userDown;
+            } else {
+                $output['errorDown'][] = $userDown;
+            }
+        }
+
+        return $output;
+    }
+
+    // Fájl feltöltés
+    public function fileUpload(Request $request, $ticketId, $commentId) {
+        $ticket = Ticket::findOrFail($ticketId);
+        $comment = Comment::findOrFail($commentId);
+
+        if(!$ticket->comments->contains($commentId)) {
+            return response()->json([
+                'error' => 'A hozzászólás nem ehhez a hibajegyhez tartozik!',
+            ], 404);
+        }
+
+        if(!Auth::user()->admin && !$ticket->users->contains(Auth::id())) {
+            return response()->json([
+                'error' => 'Nincs joga feltölteni a csatolmányt!',
+            ], 401);
+        }
+
+        $validated = $request->validate([
+            'file' => 'required|file|max:5000',
+        ]);
+
+        if(isset($comment->filename) && isset($comment->filename_hash)) {
+            Storage::delete($comment->filename_hash);
+        }
+
+        $filename = $request->file('file')->store();
+
+        $comment->filename = $request->file('file')->getClientOriginalName();
+        $comment->filename_hash = $filename;
+        $comment->save();
+
+        return new TicketResource(Ticket::with('comments')->find($ticketId));
+    }
 
 
 
