@@ -1,0 +1,105 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+"Indicates what fields are available at the top level of a query operation."
+type Query {
+    "Find a single user by an identifying attribute."
+    user(
+      "Search by primary key."
+      id: ID @eq @rules(apply: ["prohibits:email", "required_without:email"])
+
+      "Search by email address."
+      email: String @eq @rules(apply: ["prohibits:id", "required_without:id", "email"])
+    ): User @find
+
+    "List multiple users."
+    users(
+      "Filters by name. Accepts SQL LIKE wildcards `%` and `_`."
+      name: String @where(operator: "like")
+    ): [User!]! @paginate(defaultCount: 10)
+
+    ticket(id: Int! @eq): Ticket @find
+
+    tickets: [Ticket!]! @all
+}
+
+"Account of a person who utilizes this application."
+type User {
+    "Unique primary key."
+    id: ID!
+
+    "Non-unique name."
+    name: String!
+
+    "Unique email address."
+    email: String!
+
+    "Admin"
+    admin: Boolean!
+
+    "When the email was verified."
+    email_verified_at: DateTime
+
+    "When the account was created."
+    created_at: DateTime!
+
+    "When the account was last updated."
+    updated_at: DateTime!
+
+    tickets: [Ticket!]! @belongsToMany
+    comments: [Comment!]! @hasMany
+}
+
+type Ticket {
+    id: ID!
+    title: String!
+    done: Boolean!
+    priority: Int!
+    created_at: DateTime!
+    updated_at: DateTime!
+    deleted_at: DateTime
+
+    comments: [Comment!]! @hasMany
+    users: [User!]! @hasMany
+
+    commentCount: Int! @count(relation: "comments")
+}
+
+type Comment {
+    id: ID!
+    text: String!
+    filename: String
+    filename_hash: String
+    created_at: DateTime!
+    updated_at: DateTime!
+
+    ticket: Ticket! @belongsTo
+    user: User! @belongsTo
+}
+
+type Mutation {
+    # createUser(name: String!, email: String!, password: String!): User! @create
+    createUser(input: CreateUserInput @spread): User! @create
+
+    updateUser(id: ID!, name: String, email: String, password: String): User! @update
+    deleteUser(id: ID! @whereKey @rules(apply: ["exists:users,id"])): User! @delete
+}
+
+input CreateUserInput {
+    name: String! @rules(apply: ["string"])
+    email: String! @rules(
+        apply: ["email", "unique:users,email"],
+        attribute: "Ímél",
+        messages: [
+            {
+                rule: "email",
+                message: "Az :attribute mezőnek helyesnek kell lennie!"
+            },
+            {
+                rule: "unique",
+                message: "Az :attribute cím foglalt!"
+            }
+        ]
+    )
+    password: String! @rules(apply: ["string"])
+}

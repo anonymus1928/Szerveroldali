@@ -8,7 +8,9 @@
         "php": "^8.2",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
-        "laravel/tinker": "^2.9"
+        "laravel/tinker": "^2.9",
+        "mll-lab/laravel-graphiql": "^3.2",
+        "nuwave/lighthouse": "^6.45"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
