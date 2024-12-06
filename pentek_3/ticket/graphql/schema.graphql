@@ -56,7 +56,7 @@ type Ticket {
     id: ID!
     title: String!
     done: Boolean!
-    priority: Int!
+    priority: TicketPriority!
     created_at: DateTime!
     updated_at: DateTime!
     deleted_at: DateTime
@@ -65,6 +65,8 @@ type Ticket {
     comments: [Comment!]! @hasMany
 
     countComments: Int! @count(relation: "comments")
+
+    avgPriority: Float! @aggregate(model: "Ticket", column: "priority", function: AVG)
 }
 
 type Comment {
@@ -86,6 +88,14 @@ type Mutation {
     updateUser(id: Int!, name: String, email: String, password: String): User! @update
 
     deleteUser(id: Int! @whereKey @rules(apply: ["exists:users,id"])): User @delete
+
+    createTicket(
+        title: String! @rules(apply: ["string"]),
+        priority: TicketPriority! @rules(apply: ["integer", "min:0", "max:3"]),
+        text: String! @rules(apply: ["string"])
+    ): Ticket! @guard
+
+    syncUsers(input: SyncUsersInput @spread): SyncUsersResult! @guard
 }
 
 input CreateTicketInput {
@@ -105,4 +115,24 @@ input CreateTicketInput {
     password: String!  @rules(
         apply: ["required", "string"]
     )
+}
+
+input SyncUsersInput @validator {
+    ticketId: Int!,
+    up: [Int!]!,
+    down: [Int!]!,
+}
+
+type SyncUsersResult {
+    successUp: [Int!]!,
+    successDown: [Int!]!,
+    errorUp: [Int!]!,
+    errorDown: [Int!]!,
+}
+
+enum TicketPriority {
+    LOW @enum(value: 0)
+    STANDARD @enum(value: 1)
+    HIGH @enum(value: 2)
+    IMMEDIATELY @enum(value: 3)
 }
