@@ -2,13 +2,18 @@
 
 ## 4. kurzus
 
-Helyszín: LÉ.-1.53
-Időpont: 12:15 – 13:45
+Helyszín: LÉ.7.16
+Időpont: kedd, 08:15 – 09:45
 
-## 3. kurzus
+## 5. kurzus
 
-Helyszín: LD.2.709
-Időpont: 14:15 – 15:45
+Helyszín: LD.2.124
+Időpont: kedd, 14:15 – 15:45
+
+## 8. kurzus
+
+Helyszín: LD.2.108
+Időpont: kedd, 17:45 – 19:15
 
 ## Laravel projekt beállítása
 
