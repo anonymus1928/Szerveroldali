@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ticket extends Model
 {
@@ -31,5 +33,21 @@ class Ticket extends Model
         return [
             'done' => 'boolean',
         ];
+    }
+
+    public function users(): BelongsToMany {
+        return $this->belongsToMany(User::class)->withTimestamps();
+    }
+
+    public function owner(): BelongsToMany {
+        return $this->belongsToMany(User::class)->wherePivot('owner', true);
+    }
+
+    public function notOwner(): BelongsToMany {
+        return $this->belongsToMany(User::class)->wherePivot('owner', false);
+    }
+
+    public function comments(): HasMany {
+        return $this->hasMany(Comment::class);
     }
 }
