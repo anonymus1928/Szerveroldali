@@ -40,11 +40,11 @@ class Ticket extends Model
     }
 
     public function owner(): BelongsToMany {
-        return $this->belongsToMany(User::class)->wherePivot('owner', true);
+        return $this->belongsToMany(User::class)->withTimestamps()->wherePivot('owner', true);
     }
 
     public function notOwner(): BelongsToMany {
-        return $this->belongsToMany(User::class)->wherePivot('owner', false);
+        return $this->belongsToMany(User::class)->withTimestamps()->wherePivot('owner', false);
     }
 
     public function comments(): HasMany {

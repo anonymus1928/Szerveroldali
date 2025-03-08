@@ -16,7 +16,11 @@ class CommentSeeder extends Seeder
     {
         $tickets = Ticket::all();
         foreach ($tickets as $ticket) {
-            Comment::factory()->for($ticket)->create(['user_id' => $ticket->owner()->first()->id]);
+            // Comment::factory()->for($ticket)->create(['user_id' => $ticket->owner()->first()->id]);
+            $users = $ticket->notOwner->random(3);
+            foreach ($users as $user) {
+                Comment::factory()->for($ticket)->create(['user_id' => $user->id]);
+            }
         }
     }
 }

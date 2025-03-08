@@ -16,9 +16,9 @@ class CommentSeeder extends Seeder
     {
         $tickets = Ticket::all();
         foreach ($tickets as $ticket) {
-            Comment::factory()
-                ->for($ticket)
-                ->create(['user_id' => $ticket->owner()->id]);
+            // Comment::factory()
+            //     ->for($ticket)
+            //     ->create(['user_id' => $ticket->owner()->id]);
 
             $users = $ticket->notOwner->random(3);
             foreach ($users as $user) {

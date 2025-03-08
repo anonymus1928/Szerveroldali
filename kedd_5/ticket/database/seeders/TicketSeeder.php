@@ -21,6 +21,7 @@ class TicketSeeder extends Seeder
             Ticket::factory()
                     ->hasAttached($submitter, ['owner' => true])
                     ->hasAttached($tmpUsers, ['owner' => false])
+                    ->hasComments(1, ['user_id' => $submitter->id])
                     ->create();
         }
     }
