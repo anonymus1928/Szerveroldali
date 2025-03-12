@@ -37,7 +37,7 @@
                 <div class="collapse navbar-collapse" id="main-navbar">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link" href="feladatok.html">Nyitott feladatok</a>
+                            <a class="nav-link" href="{{ route('tickets.index') }}">Nyitott feladatok</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="lezart_feladatok.html">Lezárt feladatok</a>
@@ -54,12 +54,21 @@
                     </ul>
                     <div class="d-flex">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Bejelentkezés</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Regisztráció</a>
-                            </li>
+                            @auth
+                                <li class="nav-item">
+                                    <form action="{{ route('logout') }}" method="post">
+                                        @csrf
+                                        <button class="btn nav-link">Kijelentkezés</button>
+                                    </form>
+                                </li>
+                            @else
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('login') }}">Bejelentkezés</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('register') }}">Regisztráció</a>
+                                </li>
+                            @endauth
                         </ul>
                     </div>
                 </div>

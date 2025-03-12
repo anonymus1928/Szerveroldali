@@ -19,25 +19,48 @@
             </thead>
             <tbody class="text-center">
                 @foreach ($tickets as $ticket)
-                    <tr class="table-danger">
+                    <tr class="@if($ticket->priority == 3) table-danger @elseif($ticket->priority == 2) table-warning @endif">
                         <td>
-                            <span class="badge rounded-pill bg-danger fs-6">Azonnal</span>
+                            @switch($ticket->priority)
+                                @case(0)
+                                    <span class="badge rounded-pill bg-info fs-6">Alacsony</span>
+                                @break
+
+                                @case(1)
+                                    <span class="badge rounded-pill bg-success fs-6">Normál</span>
+                                @break
+
+                                @case(2)
+                                    <span class="badge rounded-pill bg-warning fs-6">Magas</span>
+                                @break
+
+                                @case(3)
+                                    <span class="badge rounded-pill bg-danger fs-6">Azonnal</span>
+                                @break
+
+                            @endswitch
                         </td>
                         <td>
-                            <div>Teszt Felhasználó</div>
-                            <div class="text-secondary">2022. 02. 11. 10:48</div>
+                            <div>{{ $ticket->owner()->first()->name }}</div>
+                            <div class="text-secondary">{{ $ticket->created_at }}</div>
                         </td>
                         <td>
-                            <div>Teszt Felhasználó</div>
-                            <div class="text-secondary">2022. 02. 11. 11:32</div>
+                            <div>{{ $ticket->comments()->orderBy('created_at', 'desc')->first()->user->name }}</div>
+                            <div class="text-secondary">{{ $ticket->comments()->orderBy('created_at', 'desc')->first()->created_at }}</div>
                         </td>
                         <td>
                             <div>
-                                <a href="feladat.html">{{ $ticket->title }}</a>
+                                <a href="{{ route('tickets.show', ['ticket' => $ticket->id]) }}">{{ $ticket->title }}</a>
                             </div>
                         </td>
                         <td>
-                            <span class="badge rounded-pill bg-info text-dark fs-6">Új</span>
+                            @if ($ticket->done)
+                                <span class="badge rounded-pill bg-info text-dark fs-6">Lezárva</span>
+                            @elseif($ticket->comments->count() === 1)
+                                <span class="badge rounded-pill bg-info text-dark fs-6">Új</span>
+                            @else
+                                <span class="badge rounded-pill bg-info text-dark fs-6">Folyamatban</span>
+                            @endif
                         </td>
                         <td>
                             <button class="btn btn-outline-secondary">

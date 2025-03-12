@@ -50,11 +50,17 @@
                         </td>
                         <td>
                             <div>
-                                <a href="feladat.html">{{ $ticket->title }}</a>
+                                <a href="{{ route('tickets.show', ['ticket' => $ticket->id]) }}">{{ $ticket->title }}</a>
                             </div>
                         </td>
                         <td>
-                            <span class="badge rounded-pill bg-info text-dark fs-6">Új</span>
+                            @if ($ticket->done)
+                                <span class="badge rounded-pill bg-info text-dark fs-6">Lezárva</span>
+                            @elseif ($ticket->comments()->count() === 1)
+                                <span class="badge rounded-pill bg-info text-dark fs-6">Új</span>
+                            @else
+                                <span class="badge rounded-pill bg-info text-dark fs-6">Folyamatban</span>
+                            @endif
                         </td>
                         <td>
                             <button class="btn btn-outline-secondary">

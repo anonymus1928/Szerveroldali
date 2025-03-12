@@ -9,21 +9,20 @@ Route::get('/', function () {
 });
 
 // Read
-Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
-Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
-
+// Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
+// Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
 // Create
-Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
-Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
-
+// Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
+// Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
 // Update
-Route::get('/tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
-Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
-
+// Route::get('/tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
+// Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
 // Delete
-Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
+// Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
 
-// Route::resource('tickets', TicketController::class);
+Route::middleware('auth')->group(function () {
+    Route::resource('tickets', TicketController::class);
+});
 
 Route::get('/dashboard', function () {
     return view('dashboard');

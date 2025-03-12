@@ -38,8 +38,6 @@
                                     <span class="badge rounded-pill bg-info fs-6">Alacsony</span>
                                     @break
 
-                                @default
-
                             @endswitch
                         </td>
                         <td>
@@ -56,7 +54,14 @@
                             </div>
                         </td>
                         <td>
-                            <span class="badge rounded-pill bg-info text-dark fs-6">Új</span>
+                            @if ($ticket->done)
+                                <span class="badge rounded-pill bg-info text-dark fs-6">Lezárva</span>
+                            @elseif ($ticket->comments->count() === 1)
+                                <span class="badge rounded-pill bg-info text-dark fs-6">Új</span>
+                            @else
+                                <span class="badge rounded-pill bg-info text-dark fs-6">Folyamatban</span>
+
+                            @endif
                         </td>
                         <td>
                             <button class="btn btn-outline-secondary">

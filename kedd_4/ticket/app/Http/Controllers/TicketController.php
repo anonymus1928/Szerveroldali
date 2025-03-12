@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TicketController extends Controller
 {
@@ -12,7 +13,7 @@ class TicketController extends Controller
      */
     public function index()
     {
-        $tickets = Ticket::all();
+        $tickets = Auth::user()->tickets()->where('done', false)->get();
         return view('tickets.tickets', ['tickets' => $tickets]);
     }
 
@@ -35,9 +36,19 @@ class TicketController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, int $id)
+    public function show(string $id)
     {
-        dd($request);
+        $ticket = Ticket::findOrFail($id);
+        // $ticket = Ticket::find($id);
+        // if(!$ticket) {
+        //     abort(404);
+        // }
+
+        // Authorization
+        if(!$ticket->users->contains(Auth::id()) && !Auth::user()->admin) {
+            abort(401);
+        }
+        return view('tickets.ticket', ['ticket' => $ticket]);
     }
 
     /**
