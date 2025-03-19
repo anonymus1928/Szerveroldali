@@ -20,6 +20,7 @@ class Comment extends Model
         'text',
         'filename',
         'filename_hash',
+        'user_id',
     ];
 
     public function user(): BelongsTo {

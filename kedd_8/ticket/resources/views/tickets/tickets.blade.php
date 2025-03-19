@@ -50,7 +50,7 @@
                         </td>
                         <td>
                             <div>
-                                <a href="feladat.html">{{ $ticket->title }}</a>
+                                <a href="{{ route('tickets.show', ['ticket' => $ticket->id]) }}">{{ $ticket->title }}</a>
                             </div>
                         </td>
                         <td>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,7 @@ class TicketController extends Controller
      */
     public function create()
     {
-        //
+        return view('tickets.ticketform');
     }
 
     /**
@@ -30,7 +31,38 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validation
+        $validated = $request->validate([
+            'title' => 'required|string|min:5|max:100',
+            'priority' => 'required|integer|min:0|max:3',
+            'text' => 'required|string|max:1000',
+            // 'file' => '',
+        ]);
+
+        // Insert into db
+        $ticket = Ticket::create($validated);
+
+        // $t = new Ticket();
+        // $t->title = $validated['title'];
+        // $t->priority = $validated['priority'];
+        // $t->save();
+
+        // Attach user and ticket
+        $ticket->users()->attach(Auth::id(), ['owner' => true]);
+
+        // Create the first comment
+        $ticket->comments()->create([
+            'text' => $validated['text'],
+            'user_id' => Auth::id(),
+        ]);
+        // Comment::create([
+        //     'ticket_id' => $ticket->id,
+        //     'user_id' => Auth::id(),
+        //     'text' => $validated['text'],
+        // ]);
+
+        // Redirect the user to the ticket's page
+        return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }
 
     /**
@@ -57,7 +89,14 @@ class TicketController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $ticket = Ticket::findOrFail($id);
+
+        // Authorization
+        if(!$ticket->users->contains(Auth::id()) && !Auth::user()->admin) {
+            abort(401);
+        }
+
+        return view('tickets.ticketform', ['ticket' => $ticket]);
     }
 
     /**
@@ -65,7 +104,26 @@ class TicketController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $ticket = Ticket::findOrFail($id);
+
+        // Authorization
+        if(!$ticket->users->contains(Auth::id()) && !Auth::user()->admin) {
+            abort(401);
+        }
+
+        // Validáció
+        $validated = $request->validate([
+            'title' => 'required|string|min:5|max:100',
+            'priority' => 'required|integer|min:0|max:3',
+        ]);
+
+        $ticket->update($validated);
+
+        // $ticket->title = $validated['title'];
+        // $ticket->priority = $validated['priority'];
+        // $ticket->save();
+
+        return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }
 
     /**

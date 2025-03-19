@@ -22,7 +22,7 @@ class TicketController extends Controller
      */
     public function create()
     {
-        //
+        return view('tickets.ticketform');
     }
 
     /**
@@ -30,7 +30,33 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validation
+        $validated = $request->validate([
+            'title' => 'required|string|min:5|max:100',
+            'priority' => 'required|integer|min:0|max:3',
+            'text' => 'required|string|max:1000',
+            // 'file' => '',
+        ]);
+
+        // Insert into db
+        $ticket = Ticket::create($validated);
+
+        // $t = new Ticket();
+        // $t->title = $validated['title'];
+        // $t->priority = $validated['priority'];
+        // $t->save();
+
+        // Attach ticket and user
+        $ticket->users()->attach(Auth::id(), ['owner' => true]);
+
+        // Create the first comment
+        $ticket->comments()->create([
+            'text' => $validated['text'],
+            'user_id' => Auth::id(),
+        ]);
+
+        // Redirect the user to the ticket's page
+        return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }
 
     /**
@@ -56,7 +82,14 @@ class TicketController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $ticket = Ticket::findOrFail($id);
+
+        // Authorization
+        if(!$ticket->users->contains(Auth::id()) && !Auth::user()->admin) {
+            abort(401);
+        }
+
+        return view('tickets.ticketform', ['ticket' => $ticket]);
     }
 
     /**
@@ -64,7 +97,24 @@ class TicketController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $ticket = Ticket::findOrFail($id);
+
+        // Authorization
+        if(!$ticket->users->contains(Auth::id()) && !Auth::user()->admin) {
+            abort(401);
+        }
+
+        $validated = $request->validate([
+            'title' => 'required|string|min:5|max:100',
+            'priority' => 'required|integer|min:0|max:3',
+        ]);
+
+        $ticket->update($validated);
+        // $ticket->title = $validated['title'];
+        // $ticket->priority = $validated['priority'];
+        // $ticket->save();
+
+        return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }
 
     /**

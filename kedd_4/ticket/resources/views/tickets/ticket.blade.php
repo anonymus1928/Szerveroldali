@@ -23,9 +23,9 @@
                     @break
             @endswitch
         </h1>
-        <button class="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Szerkesztés">
+        <a href="{{ route('tickets.edit', ['ticket' => $ticket->id]) }}" class="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Szerkesztés">
             <i class="fa-solid fa-pen-to-square fa-fw fa-xl"></i>
-        </button>
+        </a>
         <button class="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Felhasználók">
             <i class="fa-solid fa-users fa-fw fa-xl"></i>
         </button>
