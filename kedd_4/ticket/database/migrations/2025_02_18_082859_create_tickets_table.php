@@ -17,6 +17,9 @@ return new class extends Migration
             $table->boolean('done')->default(false);
             $table->enum('priority', [0, 1, 2, 3]);
             $table->timestamps();
+
+            // $table->timestamp('deleted_at')->nullable();
+            $table->softDeletes();
         });
     }
 

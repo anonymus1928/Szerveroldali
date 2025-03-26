@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,18 @@ class TicketController extends Controller
      */
     public function index()
     {
-        $tickets = Auth::user()->tickets()->where('done', false)->get();
+        $tickets = Auth::user()
+                        ->tickets()
+                        ->where('done', false)
+                        ->orderByDesc(
+                            Comment::select('updated_at')
+                                    ->whereColumn('comments.ticket_id', 'tickets.id')
+                                    ->latest()
+                                    ->take(1)
+                        )
+                        ->paginate(5);
+
+
         return view('tickets.tickets', ['tickets' => $tickets]);
     }
 
@@ -35,7 +47,7 @@ class TicketController extends Controller
             'title' => 'required|string|min:5|max:100',
             'priority' => 'required|integer|min:0|max:3',
             'text' => 'required|string|max:1000',
-            // 'file' => '',
+            'file' => 'nullable|file',
         ]);
 
         // Insert into db
@@ -50,10 +62,20 @@ class TicketController extends Controller
         $ticket->users()->attach(Auth::id(), ['owner' => true]);
 
         // Create the first comment
-        $ticket->comments()->create([
-            'text' => $validated['text'],
-            'user_id' => Auth::id(),
-        ]);
+        if($request->hasFile('file')) {
+            $filename = $request->file('file')->store();
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'user_id' => Auth::id(),
+                'filename' => $request->file('file')->getClientOriginalName(),
+                'filename_hash' => $filename,
+            ]);
+        } else {
+            $ticket->comments()->create([
+                'text' => $validated['text'],
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         // Redirect the user to the ticket's page
         return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
@@ -122,6 +144,17 @@ class TicketController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $ticket = Ticket::findOrFail($id);
+
+        // Authorization
+        if(!$ticket->users->contains(Auth::id()) && !Auth::user()->admin) {
+            abort(401);
+        }
+
+        $ticket->comments()->delete();
+
+        $ticket->delete();
+
+        return redirect()->route('tickets.index');
     }
 }

@@ -11,7 +11,7 @@
         @endisset
     </h1>
     <hr />
-    <form method="POST" action="{{ isset($ticket) ? route('tickets.update', ['ticket' => $ticket->id]) : route('tickets.store') }}">
+    <form enctype="multipart/form-data" method="POST" action="{{ isset($ticket) ? route('tickets.update', ['ticket' => $ticket->id]) : route('tickets.store') }}">
         @csrf
         @isset($ticket)
             @method('PUT')
@@ -62,7 +62,7 @@
                 @enderror
             </div>
             <div class="mb-3">
-                <input type="file" class="form-control" id="file">
+                <input type="file" class="form-control" id="file" name="file">
             </div>
         @endempty
         <div class="row">
