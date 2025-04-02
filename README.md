@@ -25,4 +25,5 @@ Időpont: kedd, 17:45 – 19:15
 - `touch database/database.sqlite`
 - `php artisan key:generate`
 - `php artisan migrate:fresh --seed`
+- `php artisan storage:link`
 - `php artisan serve`
