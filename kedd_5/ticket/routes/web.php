@@ -10,15 +10,15 @@ Route::get('/', function () {
 
 // Read
 // Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
-// Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
+// Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->where('ticket', '[0-9]+')->name('tickets.show');
 // Create
 // Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
 // Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
 // Update
-// Route::get('/tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
-// Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
+// Route::get('/tickets/{ticket}/edit', [TicketController::class, 'edit'])->where('ticket', '[0-9]+')->name('tickets.edit');
+// Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->where('ticket', '[0-9]+')->name('tickets.update');
 // Delete
-// Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
+// Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->where('ticket', '[0-9]+')->name('tickets.destroy');
 
 Route::middleware('auth')->group(function () {
     Route::resource('tickets', TicketController::class);
