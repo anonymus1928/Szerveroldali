@@ -24,8 +24,8 @@ class TicketResource extends JsonResource
             'users' => $this->whenLoaded('users'),
             'comments' => $this->whenLoaded('comments'),
             'comments_count' => $this->whenCounted('comments'),
-            'comments_count2' => $this->comments()->count(),
-            'super_secret' => $this->when(Auth::user()->admin, 'super_secret_message'),
+            'comments_count2' => $this->comments->count(),
+            'super_secret' => $this->when(Auth::user()->admin, 'supersupersecret'),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

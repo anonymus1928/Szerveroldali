@@ -15,7 +15,11 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::post('/logout', [ ApiAuthController::class, 'logout' ])->name('api.logout');
 
+    Route::post('/tickets', [ ApiController::class, 'createTicket' ])->name('api.createTicket');
+
     Route::get('/tickets/{ticket?}', [ ApiController::class, 'getTickets' ])
             ->middleware(ValidateURIParams::class)
             ->name('api.getTickets');
+
+    Route::post('/tickets/{ticket}/users', [ ApiController::class, 'syncUsers' ])->name('api.syncUsers');
 });

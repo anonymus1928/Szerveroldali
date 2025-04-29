@@ -16,9 +16,11 @@ class ValidateURIParams
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $validator = Validator::make(['id' => $request->route()->parameters['ticket']], [ 'id' => 'integer' ]);
-        if($validator->fails()) {
-            return response()->json([ 'error' => 'Hibás URI paraméter!' ], 422);
+        if(isset($request->route()->parameters['ticket'])) {
+            $validator = Validator::make(['id' => $request->route()->parameters['ticket']], [ 'id' => 'integer' ]);
+            if($validator->fails()) {
+                return response()->json([ 'error' => 'Hibás URI paraméter!' ], 422);
+            }
         }
         return $next($request);
     }

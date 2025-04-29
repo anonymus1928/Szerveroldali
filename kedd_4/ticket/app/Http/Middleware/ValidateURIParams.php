@@ -15,8 +15,7 @@ class ValidateURIParams
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $ticket = $request->route()->parameters['ticket'];
-        if(isset($ticket) && !filter_var($ticket, FILTER_VALIDATE_INT)) {
+        if(isset($request->route()->parameters['ticket']) && !filter_var($request->route()->parameters['ticket'], FILTER_VALIDATE_INT)) {
             return response()->json(['error' => 'Hibás URI paraméter!'], 422);
         }
         return $next($request);
