@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TicketCreateRequest;
 use App\Http\Resources\TicketCollection;
 use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
@@ -35,13 +36,15 @@ class ApiController extends Controller
 
 
 
-    public function createTicket(Request $request) {
+    public function createTicket(TicketCreateRequest $request) {
         // Validation
-        $validated = $request->validate([
-            'title' => 'required|string|max:100',
-            'priority' => 'required|integer|min:0|max:3',
-            'text' => 'required|string|max:1000',
-        ]);
+        // $validated = $request->validate([
+        //     'title' => 'required|string|max:100',
+        //     'priority' => 'required|integer|min:0|max:3',
+        //     'text' => 'required|string|max:1000',
+        // ]);
+
+        $validated = $request->validated();
 
         // Insert into db
         $ticket = Ticket::create($validated);
