@@ -20,7 +20,28 @@ type Query {
 
 
     # ticket(id: ID! @eq): Ticket @find
-    ticket(id: ID!): Ticket @field(resolver: "App\\GraphQL\\Queries\\TicketResolver")
+    ticket(id: ID!): Ticket @field(resolver: "App\\GraphQL\\Queries\\TicketResolver") @guard
+}
+
+type Mutation {
+    createTicket(
+        title: String! @rules(apply: ["string"])
+        priority: TicketPriority! @rules(apply: ["integer", "min:0", "max:3"])
+        text: String! @rules(apply: ["string"])
+    ): Ticket! @guard
+
+    updateTicket(
+        id: ID! @whereKey @rules(apply: ["integer", "exists:tickets,id"])
+        title: String @rules(apply: ["string"])
+        priority: TicketPriority @rules(apply: ["integer", "min:0", "max:3"])
+        done: Boolean
+    ): Ticket! @update @guard
+
+    deleteTicket(
+        id: ID! @whereKey @rules(apply: ["integer", "exists:tickets,id"])
+    ): Ticket @delete @guard
+
+    createUser(input: CreateUserInput! @spread): User! @create
 }
 
 "Account of a person who utilizes this application."
@@ -30,6 +51,8 @@ type User {
 
     "Non-unique name."
     name: String!
+
+    admin: Boolean!
 
     "Unique email address."
     email: String!
@@ -42,13 +65,45 @@ type User {
 
     "When the account was last updated."
     updated_at: DateTime!
+
+    tickets: [Ticket]! @belongsToMany
+    comments: [Comment]! @hasMany
 }
 
 type Ticket {
     id: ID!
     title: String!
     done: Boolean!
-    priority: Int!
+    # priority: Int!
+    priority: TicketPriority!
     created_at: DateTime!
     updated_at: DateTime!
+
+    users: [User]! @belongsToMany(relation: "users")
+    comments: [Comment]! @hasMany(relation: "comments")
+}
+
+type Comment {
+    id: ID!
+    text: String!
+    filename: String
+    filename_hash: String
+    created_at: DateTime!
+    updated_at: DateTime!
+
+    ticket: Ticket! @belongsTo(relation: "ticket")
+    user: User! @belongsTo(relation: "user")
+}
+
+enum TicketPriority {
+    LOW @enum(value: 0)
+    STANDARD @enum(value: 1)
+    HIGH @enum(value: 2)
+    IMMEDATE @enum(value: 3)
+}
+
+input CreateUserInput {
+    name: String!
+    email: String! @rules(apply: ["string", "email", "unique:users,email"])
+    password: String!
 }

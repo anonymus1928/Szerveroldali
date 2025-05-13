@@ -8,32 +8,60 @@ type Query {
 
         "Search by email address."
         email: String @eq @rules(apply: ["prohibits:id", "required_without:id", "email"])
-    ): User @find
+    ): User @find @guard
 
     users(
         name: String @where(operator: "like")
     ): [User]! @all
 
-    # ticket(id: Int! @eq): Ticket @find
-    ticket(id: Int!): Ticket @field(resolver: "App\\GraphQL\\Queries\\TicketResolver")
+    ticket(id: Int! @eq): Ticket @find @guard
+    # ticket(id: Int!): Ticket @field(resolver: "App\\GraphQL\\Queries\\TicketResolver")
+
+    tickets(priority: TicketPriority! @where): [Ticket]! @all
+}
+
+type Mutation {
+    createTicket(
+        title: String! @rules(apply: ["string"])
+        priority: TicketPriority! @rules(apply: ["integer", "min:0", "max:3"])
+        text: String! @rules(apply: ["string"])
+    ): Ticket! @guard
+
+    updateTicket(
+        id: ID! @whereKey @rules(apply: ["integer", "exists:tickets,id"])
+        title: String
+        priority: TicketPriority
+        done: Boolean
+    ): Ticket! @update
+
+    deleteTicket(id: ID! @whereKey @rules(apply: ["integer", "exists:tickets,id"])): Ticket @delete
+
+    createUser(input: CreateUserInput @spread): User! @create
 }
 
 type Ticket {
     id: ID!
     title: String!
     done: Boolean!
-    priority: Int!
+    priority: TicketPriority!
     created_at: DateTime!
     updated_at: DateTime!
+
+    comments: [Comment]! @hasMany(relation: "comments")
+    users: [User]! @belongsToMany(relation: "users")
 }
 
 type User {
     id: ID!
     name: String!
+    admin: Boolean!
     email: String!
     email_verified_at: DateTime
     created_at: DateTime!
     updated_at: DateTime!
+
+    tickets: [Ticket]! @belongsToMany(relation: "tickets")
+    comments: [Comment]! @belongsToMany(relation: "comments")
 }
 
 type Comment {
@@ -43,4 +71,20 @@ type Comment {
     filename_hash: String
     created_at: DateTime!
     updated_at: DateTime!
+
+    ticket: Ticket! @belongsTo(relation: "ticket")
+    user: User! @belongsTo(relation: "user")
+}
+
+enum TicketPriority {
+    LOW @enum(value: 0)
+    STANDARD @enum(value: 1)
+    HIGH @enum(value: 2)
+    IMMEDIATE @enum(value: 3)
+}
+
+input CreateUserInput {
+    name: String! @rules(apply: ["string"])
+    email: String! @rules(apply: ["string", "email", "unique:users,email"])
+    password: String! @rules(apply: ["string"])
 }

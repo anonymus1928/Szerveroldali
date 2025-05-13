@@ -27,6 +27,27 @@ type Query {
     ticket(id: ID!): Ticket @field(resolver: "App\\GraphQL\\Queries\\TicketResolver")
 }
 
+type Mutation {
+    createTicket(
+        title: String! @rules(apply: ["string"])
+        priority: TicketPriority! @rules(apply: ["integer", "min:0", "max:3"])
+        text: String! @rules(apply: ["string"])
+    ): Ticket! @guard
+
+    updateTicket(
+        id: ID! @whereKey @rules(apply: ["integer", "exists:tickets,id"])
+        title: String @rules(apply: ["string"])
+        priority: TicketPriority @rules(apply: ["integer", "min:0", "max:3"])
+        done: Boolean
+    ): Ticket! @update @guard
+
+    deleteTicket(
+        id: ID! @whereKey @rules(apply: ["integer", "exists:tickets,id"])
+    ): Ticket @delete @guard
+
+    createUser(input: CreateUserInput! @spread): User! @create
+}
+
 "Account of a person who utilizes this application."
 type User {
     "Unique primary key."
@@ -49,13 +70,47 @@ type User {
 
     "When the account was last updated."
     updated_at: DateTime!
+
+    tickets: [Ticket]! @belongsToMany(relation: "tickets")
+
+    comments: [Comment]! @hasMany(relation: "comments")
 }
 
 type Ticket {
     id: ID!
     title: String!
     done: Boolean!
-    priority: Int!
+    priority: TicketPriority!
     created_at: DateTime!
     updated_at: DateTime!
+
+    users: [User]! @belongsToMany
+
+    comments: [Comment]! @hasMany
+}
+
+type Comment {
+    id: ID!
+    text: String!
+    filename: String!
+    filename_hash: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+
+    user: User! @belongsTo
+
+    ticket: Ticket! @belongsTo
+}
+
+enum TicketPriority {
+    LOW @enum(value: 0)
+    STANDARD @enum(value: 1)
+    HIGH @enum(value: 2)
+    IMMEDIATE @enum(value: 3)
+}
+
+input CreateUserInput {
+    name: String! @rules(apply: ["string"])
+    email: String! @rules(apply: ["string", "email", "unique:users,email"])
+    password: String! @rules(apply: ["string"])
 }
