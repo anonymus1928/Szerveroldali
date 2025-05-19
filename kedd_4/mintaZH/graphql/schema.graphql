@@ -1,0 +1,75 @@
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+type Query {
+    #8. feladat
+    locations: [Location]! @all
+    weather: [Weather]! @all
+
+    #9. feladat
+    location(id: ID! @eq): Location @find
+
+    #15. feladat
+    statistics: Statistics!
+}
+
+type Mutation {
+    #11. feladat
+    # createWeather(input: CreateWeatherInput! @spread): Weather @create #nem létező location id miatt SQL FK integrity violation!
+    createWeather(input: CreateWeatherInput! @spread): Weather
+
+    #14. feladat
+    setPublic(location_id: ID!, public: Boolean!): String!
+}
+
+type Location {
+    id: ID!
+    name: String!
+    email: String!
+    lat: Float!
+    lon: Float!
+    public: Boolean!
+    created_at: DateTime!
+    updated_at: DateTime!
+
+    #13. feladat
+    currentTemp: Float
+}
+
+type Weather {
+    id: ID!
+    type: String!
+    location_id: ID!
+    temp: Float!
+    logged_at: DateTime!
+    created_at: DateTime!
+    updated_at: DateTime!
+
+    #10. feladat
+    location: Location! @belongsTo
+
+    #12. feladat
+    warnings: [Warning]! @belongsToMany @orderBy(column: "level", direction: DESC)
+}
+
+type Warning {
+    id: ID!
+    level: Int!
+    message: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+#11. feladat
+input CreateWeatherInput {
+    type: String!
+    location_id: Int!
+    temp: Float!
+    logged_at: DateTime!
+}
+
+#15. feladat
+type Statistics {
+    locationCount: Int!
+    averageTemp: Float!
+    over30Celsius: Int!
+}
