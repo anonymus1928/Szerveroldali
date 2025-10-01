@@ -48,4 +48,18 @@ class Ticket extends Model
     public function users(): BelongsToMany {
         return $this->belongsToMany(User::class);
     }
+
+    /**
+     * Get the ticket's owner.
+     */
+    public function owner(): BelongsToMany {
+        return $this->belongsToMany(User::class)->wherePivot('owner', 1);
+    }
+
+    /**
+     * Get the ticket's normal users.
+     */
+    public function notOwners(): BelongsToMany {
+        return $this->belongsToMany(User::class)->wherePivot('owner', 0);
+    }
 }
