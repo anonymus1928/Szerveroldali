@@ -49,9 +49,10 @@
 
 <hr>
 <h2>Új hozzászólás írása</h2>
-<form>
+<form method="post" action="{{ route('tickets.addComment', ['ticket' => $ticket->id]) }}">
+    @csrf
     <div class="mb-3">
-        <textarea class="form-control" name="text" id="text" cols="30" rows="10" placeholder="Hozzászólás..."></textarea>
+        <textarea class="form-control" name="text" id="text" cols="30" rows="10" placeholder="Hozzászólás...">{{old('text')}}</textarea>
     </div>
     <div class="mb-3">
         <input type="file" class="form-control" id="file">

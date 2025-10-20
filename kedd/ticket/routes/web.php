@@ -19,13 +19,15 @@ Route::get('/', function () {
 // Route::delete('/tickets/{id}',      [TicketController::class, 'delete'])->where('id', '[0-9]+')->name('tickets.delete');
 
 
-Route::resource('tickets', TicketController::class);
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::resource('tickets', TicketController::class);
+    Route::post('/tickets/{ticket}/comments', [TicketController::class, 'addComment'])->name('tickets.addComment');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
