@@ -7,7 +7,7 @@
     {{ isset($ticket) ? $ticket->title . ' szerkesztése' : 'Új feladat létrehozása' }}
 </h1>
 <hr />
-<form method="post" action="{{ isset($ticket) ? route('tickets.update', ['ticket' => $ticket->id]) : route('tickets.store') }}">
+<form method="post" enctype="multipart/form-data" action="{{ isset($ticket) ? route('tickets.update', ['ticket' => $ticket->id]) : route('tickets.store') }}">
     @csrf
     @isset($ticket)
         @method('put')
@@ -53,7 +53,7 @@
             @enderror
         </div>
         <div class="mb-3">
-            <input type="file" class="form-control" id="file">
+            <input type="file" name="file" class="form-control" id="file">
         </div>
     @endempty
     <div class="row">
