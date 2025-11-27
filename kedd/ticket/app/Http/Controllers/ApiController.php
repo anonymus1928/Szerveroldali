@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTicketRequest;
 use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
@@ -40,12 +41,14 @@ class ApiController extends Controller
         return TicketResource::collection(Auth::user()->tickets()->with('comments')->with('users')->get());
     }
 
-    public function createTicket(Request $request) {
-        $validated = $request->validate([
-            'title' => 'required|string|min:5|max:128|ends_with:please',
-            'priority' => 'required|integer|min:0|max:3',
-            'text' => 'required|string|max:1000',
-        ]);
+    public function createTicket(StoreTicketRequest $request) {
+        // $validated = $request->validate([
+        //     'title' => 'required|string|min:5|max:128|ends_with:please',
+        //     'priority' => 'required|integer|min:0|max:3',
+        //     'text' => 'required|string|max:1000',
+        // ]);
+
+        $validated = $request->validated();
 
         $ticket = Ticket::create($validated);
         $ticket->users()->attach(Auth::id(), ['owner' => true]);
