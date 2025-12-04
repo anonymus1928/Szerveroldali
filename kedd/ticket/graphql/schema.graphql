@@ -10,7 +10,7 @@ type Query {
 
       "Search by email address."
       email: String @eq @rules(apply: ["prohibits:id", "required_without:id", "email"])
-    ): User @find
+    ): User @find @guard
 
     "List multiple users."
     users(
@@ -21,6 +21,26 @@ type Query {
     ticket(
         id: ID! @eq
     ): Ticket @find
+
+}
+
+type Mutation {
+    createTicket(
+        title: String! @rules(apply: ["string", "min:5", "max:128", "ends_with:please"])
+        priority: TicketPriority! @rules(apply: ["integer", "min:0", "max:3"])
+        text: String! @rules(apply: ["string", "max:1000"])
+    ): Ticket!
+
+    UpdateTicket(
+        id: ID! @whereKey @rules(apply: ["integer", "exists:tickets,id"])
+        input: UpdateTicketInput! @spread
+    ): Ticket @update @guard
+
+    DeleteTicket(
+        id: ID! @whereKey @rules(apply: ["integer", "exists:tickets,id"])
+    ): Ticket @delete @guard
+
+    CreateUser(input: CreateUserInput @spread): User! @create
 }
 
 "Account of a person who uses this application."
@@ -53,12 +73,14 @@ type Ticket {
     id: ID!
     title: String!
     done: Boolean!
-    priority: Int!
+    priority: TicketPriority!
     created_at: DateTime!
     updated_at: DateTime!
 
     comments: [Comment]! @hasMany
     users: [User]! @belongsToMany
+
+    createComment(description: String!): Ticket! @field(resolver: "App\\GraphQL\\Types\\Ticket\\CreateComment") @guard
 }
 
 type Comment {
@@ -73,5 +95,24 @@ type Comment {
 
     ticket: Ticket! @belongsTo
     user: User! @belongsTo
+}
+
+enum TicketPriority {
+    LOW @enum(value: 0)
+    STANDARD @enum(value: 1)
+    HIGH @enum(value: 2)
+    IMMEDIATE @enum(value: 3)
+}
+
+input UpdateTicketInput {
+    title: String @rules(apply: ["string", "min:5", "max:128", "ends_with:please"])
+    done: Boolean
+    priority: TicketPriority @rules(apply: ["integer", "min:0", "max:3"])
+}
+
+input CreateUserInput {
+    name: String! @rules(apply: ["string"])
+    email: String! @rules(apply: ["string", "email", "unique:users,email"])
+    password: String! @hash @rules(apply: ["string"])
 }
 
