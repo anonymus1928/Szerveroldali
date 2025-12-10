@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Location;
+use App\Policies\LocalWeatherLogPolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

@@ -1,14 +1,14 @@
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 
 type Query {
-    locations: [Location!]!
-    location(id: ID!): Location
-    weather: [Weather!]!
+    locations: [Location!]! @all
+    location(id: ID! @eq): Location @find
+    weather: [Weather!]! @all
     statistics: Statistics!
 }
 
 type Mutation {
-    createWeather(input: CreateWeatherInput!): Weather
+    createWeather(input: CreateWeatherInput! @spread): Weather #@create
     setPublic(location_id: ID!, public: Boolean!): String!
 }
 
@@ -33,7 +33,7 @@ type Weather {
     created_at: DateTime!
     updated_at: DateTime!
     location: Location!
-    warnings: [Warning!]!
+    warnings: [Warning!]! @belongsToMany @orderBy(column: "level" direction: DESC)
 }
 
 type Warning {
@@ -52,7 +52,7 @@ input CreateWeatherInput {
 }
 
 type Statistics {
-    locationCount: Int!
-    averageTemp: Float!
+    locationCount: Int! @count(model: "Location")
+    averageTemp: Float! @aggregate(column: "temp" model: "Weather" function: AVG)
     over30Celsius: Int!
 }
