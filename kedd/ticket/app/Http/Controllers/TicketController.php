@@ -6,6 +6,7 @@ use App\Models\Comment;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
 class TicketController extends Controller
@@ -15,7 +16,9 @@ class TicketController extends Controller
      */
     public function index()
     {
-        if(Auth::user()->admin) {
+        // Authorizáció Gate-el és Policy-vel
+        if(Gate::allows('view-any')) {
+            // Admin-ok vagyunk
             $tickets = Ticket::where('done', false)
                               ->orderBYDesc(
                                 Comment::select('updated_at')
@@ -25,6 +28,7 @@ class TicketController extends Controller
                             )
                               ->paginate(10);
         } else {
+            // Nem vagyunk adminok
             $tickets = Auth::user()
                             ->tickets()
                             ->where('done', false)
@@ -36,6 +40,29 @@ class TicketController extends Controller
                             )
                             ->paginate(10);
         }
+
+        // Authorizáció Gate és Policy nélkül
+        // if(Auth::user()->admin) {
+        //     $tickets = Ticket::where('done', false)
+        //                       ->orderBYDesc(
+        //                         Comment::select('updated_at')
+        //                                 ->whereColumn('comments.ticket_id', 'tickets.id')
+        //                                 ->latest()
+        //                                 ->take(1)
+        //                     )
+        //                       ->paginate(10);
+        // } else {
+        //     $tickets = Auth::user()
+        //                     ->tickets()
+        //                     ->where('done', false)
+        //                     ->orderBYDesc(
+        //                         Comment::select('updated_at')
+        //                                 ->whereColumn('comments.ticket_id', 'tickets.id')
+        //                                 ->latest('updated_at')
+        //                                 ->take(1)
+        //                     )
+        //                     ->paginate(10);
+        // }
         return view('ticket.tickets', ['tickets' => $tickets]);
     }
 
@@ -44,6 +71,13 @@ class TicketController extends Controller
      */
     public function create()
     {
+        // Authorizáció Gate-el és Policy-val
+        // (felesleges, mert konstans true-t ad vissza a Gate)
+        if(!Gate::allows('create')) {
+            abort(401);
+        }
+
+        
         return view('ticket.ticketform');
     }
 
@@ -52,6 +86,13 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
+        // Authorizáció Gate-el és Policy-val
+        // (felesleges, mert konstans true-t ad vissza a Gate)
+        if(!Gate::allows('create')) {
+            abort(401);
+        }
+
+
         // $request->validate([
         //     'title' => 'required|string|min:5|max:128|ends_with:please',
         //     'priority' => 'required|integer|min:0|max:3',
@@ -111,11 +152,17 @@ class TicketController extends Controller
      */
     public function show(string $id)
     {
-        $ticket = Ticket::find($id);
+        $ticket = Ticket::findOrFail($id);
 
-        if(!Auth::user()->admin && !$ticket->users->contains(Auth::user())) {
+        // Authorizáció Gate-el és Policy-val
+        if(!Gate::allows('view', $ticket)) {
             abort(401);
         }
+
+        // Authorizáció Gate és Policy nélkül
+        // if(!Auth::user()->admin && !$ticket->users->contains(Auth::user())) {
+        //     abort(401);
+        // }
 
         return view('ticket.ticket', ['ticket' => $ticket]);
     }
@@ -127,9 +174,15 @@ class TicketController extends Controller
     {
         $ticket = Ticket::findOrFail($id);
 
-        if(!Auth::user()->admin && !$ticket->users->contains(Auth::user())) {
+        // Authorizáció Gate-el és Policy-val
+        if(!Gate::allows('update', $ticket)) {
             abort(401);
         }
+
+        // Authorizáció Gate és Policy nélkül
+        // if(!Auth::user()->admin && !$ticket->users->contains(Auth::user())) {
+        //     abort(401);
+        // }
 
         return view('ticket.ticketform', ['ticket' => $ticket]);
     }
@@ -141,9 +194,15 @@ class TicketController extends Controller
     {
         $ticket = Ticket::findOrFail($id);
 
-        if(!Auth::user()->admin && !$ticket->users->contains(Auth::user())) {
+        // Authorizáció Gate-el és Policy-val
+        if(!Gate::allows('update', $ticket)) {
             abort(401);
         }
+
+        // Authorizáció Gate és Policy nélkül
+        // if(!Auth::user()->admin && !$ticket->users->contains(Auth::user())) {
+        //     abort(401);
+        // }
 
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|min:5|max:128|ends_with:please',
@@ -183,9 +242,15 @@ class TicketController extends Controller
     {
         $ticket = Ticket::findOrFail($id);
 
-        if(!Auth::user()->admin && !$ticket->users->contains(Auth::user())) {
+        // Authorizáció Gate-el és Policy-val
+        if(!Gate::allows('delete', $ticket)) {
             abort(401);
         }
+
+        // Authorizáció Gate és Policy nélkül
+        // if(!Auth::user()->admin && !$ticket->users->contains(Auth::user())) {
+        //     abort(401);
+        // }
 
         $ticket->delete();
 
@@ -197,11 +262,20 @@ class TicketController extends Controller
      */
     public function addComment(Request $request, string $id)
     {
+        $ticket = Ticket::findOrFail($id);
+
+        // Authorizáció Gate-el és Policy-val
+        // Lehet készíteni külön egy policy-t
+        // új comment létrehozására, de itt most
+        // újra felhasználom az "update"-et
+        if(!Gate::allows('update', $ticket)) {
+            abort(401);
+        }
+
         $validated = $request->validate([
             'text' => 'required|string|max:1000',
         ]);
 
-        $ticket = Ticket::findOrFail($id);
         // $ticket = Ticket::find($id);
         // if(!isset($id)) {
         //     abort(404);
