@@ -1,0 +1,58 @@
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+type Query {
+    locations: [Location!]!
+    location(id: ID!): Location
+    weather: [Weather!]!
+    statistics: Statistics!
+}
+
+type Mutation {
+    createWeather(input: CreateWeatherInput!): Weather
+    setPublic(location_id: ID!, public: Boolean!): String!
+}
+
+type Location {
+    id: ID!
+    name: String!
+    email: String!
+    lat: Float!
+    lon: Float!
+    public: Boolean!
+    created_at: DateTime!
+    updated_at: DateTime!
+    currentTemp: Float
+}
+
+type Weather {
+    id: ID!
+    type: String!
+    location_id: ID!
+    temp: Float!
+    logged_at: DateTime!
+    created_at: DateTime!
+    updated_at: DateTime!
+    location: Location!
+    warnings: [Warning!]!
+}
+
+type Warning {
+    id: ID!
+    level: Int!
+    message: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+input CreateWeatherInput {
+    type: String!
+    location_id: ID!
+    temp: Float!
+    logged_at: DateTime!
+}
+
+type Statistics {
+    locationCount: Int!
+    averageTemp: Float!
+    over30Celsius: Int!
+}
