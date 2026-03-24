@@ -38,4 +38,12 @@ class Ticket extends Model
     {
         return $this->belongsToMany(User::class)->withTimestamps();
     }
+
+    /**
+     * Get the submitter user.
+     */
+    public function owner() : BelongsToMany
+    {
+        return $this->belongsToMany(User::class)->wherePivot('is_owner', true)->withTimestamps();
+    }
 }

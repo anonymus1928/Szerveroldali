@@ -38,8 +38,8 @@
                             @endswitch
                         </td>
                         <td>
-                            <div>Teszt Felhasználó</div>
-                            <div class="text-secondary">2022. 02. 11. 10:48</div>
+                            <div>{{ $ticket->owner()->first()->name }}</div>
+                            <div class="text-secondary">{{ $ticket->created_at }}</div>
                         </td>
                         <td>
                             <div>{{ $ticket->comments->sortByDesc('created_at')->first()->user->name }}</div>
@@ -69,5 +69,6 @@
 
             </tbody>
         </table>
+        {{ $tickets->links() }}
     </div>
 @endsection

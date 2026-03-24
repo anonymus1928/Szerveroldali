@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,16 @@ class TicketController extends Controller
      */
     public function index()
     {
-        $tickets = Ticket::with('comments')->get();
+        $tickets = Ticket::with('comments')
+                           ->where('done', false)
+                           ->orderByDesc(
+                                Comment::select('updated_at')
+                                       ->whereColumn('comments.ticket_id', 'tickets.id')
+                                       ->latest('updated_at')
+                                       ->take(1)
+                           )
+                           ->paginate(5);
+                        //    ->get();
         return view('ticket.tickets', ['tickets' => $tickets]);
     }
 
@@ -37,7 +47,12 @@ class TicketController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $ticket = Ticket::with('comments')->find($id);
+        if (!$ticket) {
+            abort(404);
+        }
+
+        return view('ticket.ticket', ['ticket' => $ticket]);
     }
 
     /**
