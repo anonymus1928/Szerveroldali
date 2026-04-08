@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Ticket;
+use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class TicketController extends Controller
 {
@@ -31,7 +34,7 @@ class TicketController extends Controller
      */
     public function create()
     {
-        //
+        return view('ticket.ticketform');
     }
 
     /**
@@ -39,7 +42,28 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => [
+                'required',
+                'string',
+                'max:100',
+                'ends_with:please',
+                // Egyedi rule
+                // function (string $attribute, mixed $value, Closure $fail) { $fail('valami gond van'); }
+            ],
+            'priority' => ['required', 'integer', 'between:0,3'],
+            'text' => ['required', 'string'],
+        ]);
+
+        $ticket = Ticket::create($validated);
+        $ticket->users()->attach(Auth::id(), ['is_owner' => true]);
+
+        $ticket->comments()->create([
+            'description' => $validated['text'],
+            'user_id' => Auth::id(),
+        ]);
+
+        return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }
 
     /**
@@ -47,10 +71,11 @@ class TicketController extends Controller
      */
     public function show(string $id)
     {
-        $ticket = Ticket::with('comments')->find($id);
-        if (!$ticket) {
-            abort(404);
-        }
+        $ticket = Ticket::with('comments')->findOrFail($id);
+        // $ticket = Ticket::with('comments')->find($id);
+        // if (!$ticket) {
+        //     abort(404);
+        // }
 
         return view('ticket.ticket', ['ticket' => $ticket]);
     }
@@ -60,7 +85,9 @@ class TicketController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $ticket = Ticket::findOrFail($id);
+
+        return view('ticket.ticketform', ['ticket' => $ticket]);
     }
 
     /**
@@ -68,7 +95,23 @@ class TicketController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate([
+            'title' => [
+                'required',
+                'string',
+                'max:100',
+                'ends_with:please',
+                // Egyedi rule
+                // function (string $attribute, mixed $value, Closure $fail) { $fail('valami gond van'); }
+            ],
+            'priority' => ['required', 'integer', 'between:0,3'],
+        ]);
+
+        $ticket = Ticket::findOrFail($id);
+
+        $ticket->update($validated);
+
+        return redirect()->route('tickets.show', ['ticket' => $ticket->id]);
     }
 
     /**

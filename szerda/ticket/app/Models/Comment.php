@@ -20,6 +20,7 @@ class Comment extends Model
         'description',
         'filename',
         'filename_hash',
+        'user_id',
     ];
 
     /**

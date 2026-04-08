@@ -1,33 +1,54 @@
 @extends('ticket.layout')
 
-@section('Új feladat létrehozása')
+@section('title', isset($ticket) ? $ticket->title : 'Új feladat létrehozása')
 
 @section('content')
-    <h1 class="ps-3">Új feladat</h1>
+    <h1 class="ps-3">{{ isset($ticket) ? "$ticket->title szerkesztése" : 'Új feladat létrehozása' }}</h1>
     <hr />
-    <form>
+    <form method="post" action="{{ isset($ticket) ? route('tickets.update', ['ticket' => $ticket->id]) : route('tickets.store') }}">
+        @csrf
+        @isset($ticket)
+            @method('put')
+        @endisset
         <div class="row mb-3">
             <div class="col">
-                <input type="text" class="form-control" placeholder="Tárgy" name="title" id="title"/>
+                <input type="text" class="form-control @error('title') is-invalid @enderror" placeholder="Tárgy" name="title" id="title" value="{{ old('title', $ticket->title ?? '') }}"/>
+                @error('title')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
             <div class="col">
-                <select class="form-select" name="priority" id="priority">
+                <select class="form-select @error('priority') is-invalid @enderror" name="priority" id="priority">
                     <option disabled>Priorítás</option>
-                    <option value="0">Alacsony</option>
-                    <option value="1">Normál</option>
-                    <option value="2">Magas</option>
-                    <option value="3">Azonnal</option>
+                    <option value="0" @selected(old('priority', $ticket->priority ?? -1) == 0)>Alacsony</option>
+                    <option value="1" @selected(old('priority', $ticket->priority ?? -1) == 1)>Normál</option>
+                    <option value="2" @selected(old('priority', $ticket->priority ?? -1) == 2)>Magas</option>
+                    <option value="3" @selected(old('priority', $ticket->priority ?? -1) == 3)>Azonnal</option>
                 </select>
+                @error('priority')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
-        <div class="mb-3">
-            <textarea class="form-control" name="text" id="text" cols="30" rows="10" placeholder="Hiba leírása..."></textarea>
-        </div>
-        <div class="mb-3">
-            <input type="file" class="form-control" id="file">
-        </div>
-        <div class="row">
-            <button type="submit" class="btn btn-primary">Mentés</button>
-        </div>
+        @empty($ticket)
+            <div class="mb-3">
+                <textarea class="form-control @error('text') is-invalid @enderror" name="text" id="text" cols="30" rows="10" placeholder="Hiba leírása...">{{ old('text') }}</textarea>
+                @error('text')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+            <div class="mb-3">
+                <input type="file" class="form-control" id="file">
+            </div>
+        @endempty
+            <div class="row">
+                <button type="submit" class="btn btn-primary">Mentés</button>
+            </div>
     </form>
 @endsection
