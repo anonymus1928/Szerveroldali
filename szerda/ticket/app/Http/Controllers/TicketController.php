@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTicketRequest;
 use App\Models\Comment;
 use App\Models\Ticket;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class TicketController extends Controller
@@ -14,18 +17,32 @@ class TicketController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tickets = Ticket::with('comments')
-                           ->where('done', false)
-                           ->orderByDesc(
-                                Comment::select('updated_at')
-                                       ->whereColumn('comments.ticket_id', 'tickets.id')
-                                       ->latest('updated_at')
-                                       ->take(1)
-                           )
-                           ->paginate(5);
-                        //    ->get();
+        if($request->user()->can('viewAny', Ticket::class)) {
+            $tickets = Ticket::with('comments')
+                               ->where('done', false)
+                               ->orderByDesc(
+                                    Comment::select('updated_at')
+                                           ->whereColumn('comments.ticket_id', 'tickets.id')
+                                           ->latest('updated_at')
+                                           ->take(1)
+                               )
+                               ->paginate(5);
+                            //    ->get();
+        } else {
+            $tickets = $request->user()->tickets()
+                               ->with('comments')
+                               ->where('done', false)
+                               ->orderByDesc(
+                                    Comment::select('updated_at')
+                                           ->whereColumn('comments.ticket_id', 'tickets.id')
+                                           ->latest('updated_at')
+                                           ->take(1)
+                               )
+                               ->paginate(5);
+                            //    ->get();
+        }
         return view('ticket.tickets', ['tickets' => $tickets]);
     }
 
@@ -34,26 +51,19 @@ class TicketController extends Controller
      */
     public function create()
     {
+        Gate::authorize('create', Ticket::class);
+
         return view('ticket.ticketform');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreTicketRequest $request)
     {
-        $validated = $request->validate([
-            'title' => [
-                'required',
-                'string',
-                'max:100',
-                'ends_with:please',
-                // Egyedi rule
-                // function (string $attribute, mixed $value, Closure $fail) { $fail('valami gond van'); }
-            ],
-            'priority' => ['required', 'integer', 'between:0,3'],
-            'text' => ['required', 'string'],
-        ]);
+        Gate::authorize('create', Ticket::class);
+
+        $validated = $request->validated();
 
         $ticket = Ticket::create($validated);
         $ticket->users()->attach(Auth::id(), ['is_owner' => true]);
@@ -72,6 +82,8 @@ class TicketController extends Controller
     public function show(string $id)
     {
         $ticket = Ticket::with('comments')->findOrFail($id);
+
+        Gate::authorize('view', $ticket);
         // $ticket = Ticket::with('comments')->find($id);
         // if (!$ticket) {
         //     abort(404);
@@ -86,6 +98,8 @@ class TicketController extends Controller
     public function edit(string $id)
     {
         $ticket = Ticket::findOrFail($id);
+
+        Gate::authorize('update', $ticket);
 
         return view('ticket.ticketform', ['ticket' => $ticket]);
     }
@@ -107,7 +121,11 @@ class TicketController extends Controller
             'priority' => ['required', 'integer', 'between:0,3'],
         ]);
 
+        // $validator = Validator::make($request->all(), )
+
         $ticket = Ticket::findOrFail($id);
+
+        Gate::authorize('update', $ticket);
 
         $ticket->update($validated);
 
@@ -119,6 +137,12 @@ class TicketController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $ticket = Ticket::findOrFail($id);
+
+        Gate::authorize('forceDelete', $ticket);
+
+        $ticket->delete();
+
+        return redirect()->route('tickets.index');
     }
 }

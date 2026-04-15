@@ -16,6 +16,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
     Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
     Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->where('ticket', '[0-9]+')->name('tickets.show');
+    Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->where('ticket', '[0-9]+')->name('tickets.destroy');
 });
 
 Route::get('/dashboard', function () {

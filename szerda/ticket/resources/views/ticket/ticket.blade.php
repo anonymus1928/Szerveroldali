@@ -29,9 +29,13 @@
         <button class="btn btn-success mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Lezárás">
             <i class="fa-solid fa-check fa-fw fa-xl"></i>
         </button>
-        <button class="btn btn-danger mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Törlés">
-            <i class="fa-solid fa-trash fa-fw fa-xl"></i>
-        </button>
+        <form action="{{ route('tickets.destroy', ['ticket' => $ticket->id]) }}" method="post">
+            @csrf
+            @method('delete')
+            <button class="btn btn-danger mx-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Törlés">
+                <i class="fa-solid fa-trash fa-fw fa-xl"></i>
+            </button>
+        </form>
     </div>
     <hr />
 
