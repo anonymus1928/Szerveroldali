@@ -61,9 +61,16 @@ class TicketController extends Controller
      */
     public function store(StoreTicketRequest $request)
     {
-        Gate::authorize('create', Ticket::class);
+        // Gate::authorize('create', Ticket::class); // StoreTicketRequest-be átszervezve
 
         $validated = $request->validated();
+
+        $filename = null;
+        $filename_hash = null;
+        if($request->hasFile('file')) {
+            $filename_hash = $request->file('file')->store();
+            $filename = $request->file('file')->getClientOriginalName();
+        }
 
         $ticket = Ticket::create($validated);
         $ticket->users()->attach(Auth::id(), ['is_owner' => true]);
@@ -71,6 +78,8 @@ class TicketController extends Controller
         $ticket->comments()->create([
             'description' => $validated['text'],
             'user_id' => Auth::id(),
+            'filename' => $filename,
+            'filename_hash' => $filename_hash,
         ]);
 
         return redirect()->route('tickets.show', ['ticket' => $ticket->id]);

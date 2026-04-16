@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Ticket;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +13,7 @@ class StoreTicketRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()->can('create', Ticket::class);
     }
 
     /**
@@ -33,6 +34,7 @@ class StoreTicketRequest extends FormRequest
             ],
             'priority' => ['required', 'integer', 'between:0,3'],
             'text' => ['required', 'string'],
+            'file' => ['nullable', 'file']
         ];
     }
 

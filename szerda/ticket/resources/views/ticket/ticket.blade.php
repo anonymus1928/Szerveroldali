@@ -44,7 +44,7 @@
             <div class="card-header d-flex">
                 <div class="me-auto"><span class="badge bg-secondary">#{{ $loop->index }}</span> | <strong>{{ $comment->user->name }}</strong> | {{ $comment->created_at }}</div>
                 @isset($comment->filename)
-                    <div><a href="#"><i class="fa-solid fa-download"></i></a></div>
+                    <div><a href="{{ Storage::url($comment->filename_hash) }}" download="{{ $comment->filename }}"><i class="fa-solid fa-download"></i></a></div>
                 @endisset
             </div>
             <div class="card-body">
