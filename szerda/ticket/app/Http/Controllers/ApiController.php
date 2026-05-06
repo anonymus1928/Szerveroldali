@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTicketRequest;
+use App\Http\Resources\TicketResource;
 use App\Models\Comment;
 use App\Models\Ticket;
 use App\Models\User;
@@ -64,7 +65,52 @@ class ApiController extends Controller
             return response()->json([
                 'token' => $token,
                 'user' => $user,
-            ], 201);
+            ]);
         }
+    }
+
+    /**
+     * Get tickets.
+     */
+    public function getTickets(Request $request, null|string $ticketID = null) {
+        if(isset($ticketID)) {
+            // Natív
+            // if (!filter_var($ticketID, FILTER_VALIDATE_INT)) {
+            //     return response()->json(['error' => 'Hibás URI paraméter!'], 422);
+            // }
+
+            // Laraveles
+            Validator::validate(['id' => $ticketID], ['id' => 'nullable|integer']);
+
+            if($request->user()->tokenCan('ticket:admin')) {
+                return new TicketResource(Ticket::findOrFail($ticketID));
+            }
+            return new TicketResource($request->user()->tickets()->findOrFail($ticketID));
+        }
+
+        if($request->user()->tokenCan('ticket:admin')) {
+            return TicketResource::collection(Ticket::with('comments')->get());
+        }
+        return TicketResource::collection($request->user()->tickets()->with('comments')->withCount('comments')->get());
+        // return TicketResource::collection($request->user()->tickets()->with(['comments', 'owner', 'users'])->get());
+    }
+
+    /**
+     * Add a new comment to a ticket.
+     */
+    public function addComment(Request $request, string $ticketID) {
+        $ticket = Ticket::findOrFail($ticketID);
+        Gate::authorize('update', $ticket);
+
+        $validated = $request->validate([
+            'text' => 'required|string',
+        ]);
+
+        $ticket->comments()->create([
+            'description' => $validated['text'],
+            'user_id' => Auth::id(),
+        ]);
+
+        return response()->json(new TicketResource(Ticket::with('comments')->find($ticket->id)), 201);
     }
 }

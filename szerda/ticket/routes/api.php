@@ -11,4 +11,6 @@ Route::get('/user', function (Request $request) {
 Route::post('/register', [ApiController::class, 'register'])->name('api.register');
 Route::post('/login', [ApiController::class, 'login'])->name('api.login');
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/tickets/{ticket?}', [ApiController::class, 'getTickets'])->name('api.tickets.getTickets');
+    Route::post('/tickets/{ticket}', [ApiController::class, 'addComment'])->name('api.tickets.addComment');
 });
