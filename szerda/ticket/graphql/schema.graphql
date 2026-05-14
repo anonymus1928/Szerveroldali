@@ -37,6 +37,23 @@ type Query {
     statistics: Statistics
 }
 
+type Mutation {
+    createTicket(
+        title: String! @rules(apply: ["string", "max:100", "ends_with:please"])
+        priority: Priority! @rules(apply: ["integer", "min:0", "max:3"])
+        text: String! @rules(apply: ["string"])
+    ): Ticket @guard
+
+    updateTicket(
+        id: ID! @whereKey @rules(apply: ["integer", "exists:tickets,id"])
+        input: UpdateTicketInput! @spread
+    ): Ticket @update @guard #@can(ability: "update", args: )
+
+    deleteTicket(
+        id: ID! @whereKey @rules(apply: ["integer", "exists:tickets,id"])
+    ): Ticket @delete @guard
+}
+
 "Account of a person who uses this application."
 type User {
     "Unique primary key."
@@ -75,6 +92,12 @@ type Ticket {
     owner: [User]! @belongsToMany
 
     comments: [Comment]! @hasMany
+
+    createComment(
+        input: CreateCommentInput! @spread
+    ): Comment! @guard
+
+    commentCountt: Int! @guard @field(resolver: "App\\GraphQL\\Types\\Ticket\\CommentCount@__invoke")
 }
 
 type Comment {
@@ -100,4 +123,14 @@ type Statistics {
     active_ticket_number: Int!
     comments_avg: Float!
     most_comments: Ticket!
+}
+
+input UpdateTicketInput {
+    title: String @rules(apply: ["string", "max:100", "ends_with:please"])
+    priority: Priority @rules(apply: ["integer", "min:0", "max:3"])
+    done: Boolean @rules(apply: ["boolean"])
+}
+
+input CreateCommentInput {
+    description: String! @rules(apply: ["string"])
 }

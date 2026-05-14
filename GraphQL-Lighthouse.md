@@ -382,6 +382,8 @@ Az alábbi *artisan* parancsok egyikével tudunk generálni *resolver*-t.
 php artisan lighthouse:query CustomResolver
 
 php artisan lighthouse:mutation CustomResolver
+
+php artisan lighthouse:field Model.FieldName (pl.: Ticket.CommentCount)
 ```
 
 > [!WARNING]
